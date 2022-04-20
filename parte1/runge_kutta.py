@@ -2,14 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#implementação do RK4 classico
-
 class RK4():
+    '''
+    Implementação do RK4 clássico
+    '''
     def __init__(self, func, step, x0, y0):
         self.func = func #espera funcao de x e y
         self.step = step #assume step fixo
         self.x0 = x0 #vetor da variavel independente
         self.y0 = y0 #vetor da variavel dependente
+
 
     def compute_step(self, x, y):
 
@@ -20,9 +22,9 @@ class RK4():
 
         k3 = self.func(x + self.step/2, y + self.step/2 * k2)
 
-        k4 = self.func(x + self.step, y + self.step*k3)
+        k4 = self.func(x + self.step, y + self.step * k3)
 
-        return y + self.step/6 * (k1 + 2*k2 + 2*k3 + k4)
+        return y + self.step/6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
     def solve(self, length):
 
