@@ -54,28 +54,28 @@ if __name__ == '__main__':
 
     plot_scalars = {
         'q': 1e5,
-        'i1': 1e2,
-        'i2': 1e2,
-        'i1dot': 0.1,
-        'i2dot': 0.1,
+        'i_1': 1e2,
+        'i_2': 1e2,
+        '\dot{i_1}': 0.1,
+        '\dot{i_2}': 0.1,
     }
 
     #plot dos valores
 
     plt.plot(t_int, y_int[:, 0] * plot_scalars['q'])
-    plt.plot(t_int, y_int[:, 1] * plot_scalars['i1'])
-    plt.plot(t_int, y_int[:, 2] * plot_scalars['i2'])
+    plt.plot(t_int, y_int[:, 1] * plot_scalars['i_1'])
+    plt.plot(t_int, y_int[:, 2] * plot_scalars['i_2'])
 
     #plot das derivadas
-    plt.plot(t_int, ydot_int[:, 1] * plot_scalars['i1dot'])
-    plt.plot(t_int, ydot_int[:, 2] * plot_scalars['i2dot'])
+    plt.plot(t_int, ydot_int[:, 1] * plot_scalars['\dot{i_1}'])
+    plt.plot(t_int, ydot_int[:, 2] * plot_scalars['\dot{i_1}'])
 
-    plt.legend([f'{key}*{value:.2E}' for key, value in plot_scalars.items()])
+    plt.legend([f'${key} \cdot {value:.2e}$' for key, value in plot_scalars.items()])
 
     top_limit = 150
     plt.ylim(top=top_limit, bottom=-top_limit)
 
-    plt.title(f'Passo: {delta_t}, integracao de {t0} a {tmax}')
+    plt.title(f'Integração de {t0} a {tmax} com passo {delta_t:.2e}')
     plt.grid(True)
 
     plt.show()
