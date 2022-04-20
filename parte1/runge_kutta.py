@@ -30,16 +30,17 @@ class RK4():
         vec_y = np.zeros(shape=(length, self.y0.shape[0]))
         vec_y[0, :] = self.y0
 
-        print(vec_y)
-
         vec_x = np.zeros(shape=(length,))
         vec_x[0] = self.x0
 
         for i in range(0, length-1, 1):
+
             vec_y[i + 1, :] = self.compute_step(vec_x[i], vec_y[i, :])
             vec_x[i + 1] = vec_x[i] + self.step
 
         return vec_x, vec_y
+
+
 
 if __name__ == '__main__':
 
@@ -56,9 +57,8 @@ if __name__ == '__main__':
     runge = RK4(f, h, x0, y0)
     x, y = runge.solve(3)
 
-    import pdb; pdb.set_trace()
-
-    plt.plot(x, y)
+    plt.plot(x, y[:, 0])
+    plt.plot(x, y[:, 1])
     plt.show()
 
 
