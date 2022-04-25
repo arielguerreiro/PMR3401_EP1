@@ -1,19 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 class RK4():
     '''
     Implementação do RK4 clássico
     '''
-    def __init__(self, func, step, x0, y0):
+    def __init__(self: object, func: np.array, step: float, x0: float, y0: np.array):
         self.func = func #espera funcao de x e y
         self.step = step #assume step fixo
-        self.x0 = x0 #vetor da variavel independente
+        self.x0 = x0 #valor da variavel independente
         self.y0 = y0 #vetor da variavel dependente
 
 
-    def compute_step(self, x, y):
+    def _compute_step(self, x, y):
 
         #calcula constantes seguindo RK4 classico
         k1 = self.func(x, y)
@@ -26,18 +25,18 @@ class RK4():
 
         return y + self.step/6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
-    def solve(self, length):
+    def solve(self, n_steps):
 
         #formato do vetor: vec_y[instante, variavel]
-        vec_y = np.zeros(shape=(length, self.y0.shape[0]))
+        vec_y = np.zeros(shape=(n_steps, self.y0.shape[0]))
         vec_y[0, :] = self.y0
 
-        vec_x = np.zeros(shape=(length,))
+        vec_x = np.zeros(shape=(n_steps,))
         vec_x[0] = self.x0
 
-        for i in range(0, length-1, 1):
+        for i in range(0, n_steps-1, 1):
 
-            vec_y[i + 1, :] = self.compute_step(vec_x[i], vec_y[i, :])
+            vec_y[i + 1, :] = self._compute_step(vec_x[i], vec_y[i, :])
             vec_x[i + 1] = vec_x[i] + self.step
 
         return vec_x, vec_y

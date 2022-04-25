@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     tmax = 0.1
 
-    length = int(tmax / delta_t)
+    n_steps = int(tmax / delta_t)
 
     Y0 = np.array([
         0,
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     edo = RK4(func=f, step=delta_t, x0=t0, y0=Y0)
 
-    t_int, y_int = edo.solve(length)
+    t_int, y_int = edo.solve(n_steps)
 
     ydot_int = np.array([f(t_int[i], y_int[i, :]) for i in range(len(t_int))])
 
