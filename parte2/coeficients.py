@@ -18,7 +18,7 @@ def compute_inside(sigma, deltaPhi, deltaR, R):
         (sigma)/((deltaPhi**2)*(R**2)) 
     ]) 
 
-    return coeficients
+    return -coeficients[1:]/coeficients[0]
 
 
 def compute_uper_border(sigma, deltaPhi, deltaR, R):
@@ -36,7 +36,7 @@ def compute_uper_border(sigma, deltaPhi, deltaR, R):
         (2/(deltaPhi**2)*(sigma/(R**2)))
     ]) 
 
-    return coeficients
+    return -coeficients[1:]/coeficients[0]
 
 
 def compute_borderAB_byR(sigmaA, sigmaB, deltaPhi, deltaR, R):
@@ -56,7 +56,7 @@ def compute_borderAB_byR(sigmaA, sigmaB, deltaPhi, deltaR, R):
         (sigmaA+sigmaB)/((deltaPhi**2)*(R**2))
     ]) 
 
-    return coeficients
+    return -coeficients[1:]/coeficients[0]
 
 def compute_borderAB_byPHI(sigmaA, sigmaB, deltaPhi, deltaR, R):
     '''
@@ -75,7 +75,7 @@ def compute_borderAB_byPHI(sigmaA, sigmaB, deltaPhi, deltaR, R):
         (2*sigmaA)/((deltaPhi**2)*(R**2))
     ]) 
 
-    return coeficients
+    return -coeficients[1:]/coeficients[0]
 
 if __name__ == "__main__":
     print(compute_borderAB_byPHI(1,1,1,1,1))
