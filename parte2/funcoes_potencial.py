@@ -41,11 +41,11 @@ def dir_B(M, i, j, dr, dtheta):
 
 #4: borda esquerda de A
 def esq_A(M, i, j, dr, dtheta):
-    pass
+    return 100
 
 #5: borda direita de A
 def dir_A(M, i, j, dr, dtheta):
-    pass
+    return 0
 
 #6: borda inferior de A (regiao de simetria)
 def inf_B(M, i, j, dr, dtheta):
@@ -93,3 +93,14 @@ def inter_B(M, i, j, dr, dtheta):
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
     return (coefs[1:] @ pontos)/coefs[0]
+
+
+if __name__ == '__main__':
+    from cria_malha import *
+
+    dr = 0.0005
+    dtheta = np.deg2rad(0.5)
+    lamb = 1.5
+    erro_des = 1e-2
+
+    M = cria_malha(dr, dtheta)
