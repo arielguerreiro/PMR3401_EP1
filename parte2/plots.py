@@ -26,8 +26,9 @@ def cria_plot(M, dr, dtheta):
             raio = 0.03 + i*dr
             angulo = j*dtheta
 
-            x = raio*np.cos(np.deg2rad(angulo))
-            y = raio*np.sin(np.deg2rad(angulo))
+            x = raio*np.cos(angulo)
+            y = raio*np.sin(angulo)
+            #print(f"\nPara j={j}: ang = {np.rad2deg(angulo):.3f}, x = {x:.4f}, y = {y:.4f}")
 
             valor = M[i,j]
 
