@@ -37,7 +37,7 @@ def sup_A(M, i, j, dr, dtheta):
         (2/(dtheta**2)*(sigma/(raio**2)))
     ]) 
 
-    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1]]).reshape(4,1)
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1]]).reshape(3,1)
 
     return (-coefs[1:] @ pontos)/coefs[0]
 

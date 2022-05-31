@@ -13,8 +13,13 @@ def define_condicao(i, j, dr, dtheta):
     theta = np.rad2deg(j*dtheta + min(props_geo['Theta_A']))
     #angulos sao usados em graus nessa funcao para facilitar a analise
 
-    if(theta >= 40): 
-        return 0 # borda superior material A
+    if(theta >= 40):
+        if(raio == 0.03):
+            return 4
+        if(raio == 0.11):
+            return 5
+        else:
+            return 0 # borda superior material A
     
     elif(theta == 0):
         if(0.05 < raio < 0.08):
@@ -168,7 +173,7 @@ def main():
     #definicao de propriedades 
     dr = 0.0005
     dtheta = np.deg2rad(0.5)
-    lamb = 1.5
+    lamb = 0.5
     erro_des = 1e-2
 
     #cria matriz inicialmente zerada
