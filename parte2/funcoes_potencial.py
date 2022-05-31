@@ -48,7 +48,7 @@ def dir_A(M, i, j, dr, dtheta):
     return 0
 
 #6: borda inferior de A (regiao de simetria)
-def inf_B(M, i, j, dr, dtheta):
+def inf_A(M, i, j, dr, dtheta):
     pass
 
 #7: borda superior de B
@@ -104,3 +104,4 @@ if __name__ == '__main__':
     erro_des = 1e-2
 
     M = cria_malha(dr, dtheta)
+    
