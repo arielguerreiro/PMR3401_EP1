@@ -25,19 +25,80 @@ fisicas e eletricas
 
 #0: borda superior de A
 def sup_A(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigma = props_elet['sigma_A']
+    
+    coefs = np.array([
+        -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)),
+        (sigma/(dr**2)), 
+        (sigma/(dr**2)), 
+        (2/(dtheta**2)*(sigma/(raio**2)))
+    ]) 
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #1: borda inferior de B (regiao de simetria)
 def inf_B(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigma = props_elet['sigma_B']
+
+    coefs = np.array([
+        -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)), 
+        (sigma/dr)*((1/dr) - (1/2*raio)), 
+        (sigma/dr)*((1/dr) + (1/2*raio)),
+        (sigma)/((dtheta**2)*(raio**2)), 
+        (sigma)/((dtheta**2)*(raio**2)) 
+    ])
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #2: borda esquerda de B
 def esq_B(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigmaA = props_elet['sigma_A']
+    sigmaB = props_elet['sigma_B']
+
+    coefs = np.array([
+        (2*(sigmaB-sigmaA)/(dr**2)) - 2*(sigmaA+sigmaB)/((raio**2)*(dtheta**2)),
+        (2*(sigmaA)/(dr**2)) - (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        (-2*(sigmaB)/(dr**2)) + (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        (sigmaA+sigmaB)/((dtheta**2)*(raio**2)),
+        (sigmaA+sigmaB)/((dtheta**2)*(raio**2))
+    ]) 
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #3: borda direita de B
 def dir_B(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigmaA = props_elet['sigma_A']
+    sigmaB = props_elet['sigma_B']
+
+    coefs = np.array([
+        (2*(sigmaA-sigmaB)/(dr**2)) - 2*(sigmaA+sigmaB)/((raio**2)*(dtheta**2)),
+        (2*(sigmaB)/(dr**2)) - (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        (-2*(sigmaA)/(dr**2)) + (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        (sigmaA+sigmaB)/((dtheta**2)*(raio**2)),
+        (sigmaA+sigmaB)/((dtheta**2)*(raio**2))
+    ]) 
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #4: borda esquerda de A
 def esq_A(M, i, j, dr, dtheta):
@@ -49,11 +110,42 @@ def dir_A(M, i, j, dr, dtheta):
 
 #6: borda inferior de A (regiao de simetria)
 def inf_A(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigma = props_elet['sigma_A']
+
+    coefs = np.array([
+        -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)), 
+        (sigma/dr)*((1/dr) - (1/2*raio)), 
+        (sigma/dr)*((1/dr) + (1/2*raio)),
+        (sigma)/((dtheta**2)*(raio**2)), 
+        (sigma)/((dtheta**2)*(raio**2)) 
+    ])
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #7: borda superior de B
 def sup_B(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigmaA = props_elet['sigma_A']
+    sigmaB = props_elet['sigma_B']
+
+    coefs = np.array([
+        (-2*(sigmaB+sigmaA)/(dr**2)) - 2*(sigmaA+sigmaB)/((raio**2)*(dtheta**2)),
+        ((sigmaA+sigmaB)/(dr**2)) - (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        ((sigmaA+sigmaB)/(dr**2)) + (sigmaA+sigmaB)/(2*(dr)*(raio)),
+        (2*sigmaB)/((dtheta**2)*(raio**2)),
+        (2*sigmaA)/((dtheta**2)*(raio**2))
+    ]) 
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
+
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 #8: interior de A
 def inter_A(M, i, j, dr, dtheta):
@@ -72,7 +164,7 @@ def inter_A(M, i, j, dr, dtheta):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (coefs[1:] @ pontos)/coefs[0]
+    return (-coefs[1:] @ pontos)/coefs[0]
 
 
 #9: interior de B
