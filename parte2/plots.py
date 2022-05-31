@@ -5,14 +5,6 @@ import plotly.express as ex
 
 from cria_malha import *
 
-props_geo = {
-    "R_A" : [0.03, 0.08 + 0.03],
-    "R_B" : [0.03 + 0.02, 0.03 + 0.05],
-    "Theta_A" : [0, np.deg2rad(40)],
-    "Theta_B" : [0, np.deg2rad(18)],
-}
-
-
 def cria_plot(M, dr, dtheta):
 
     sns.color_palette("tab10")
@@ -35,9 +27,6 @@ def cria_plot(M, dr, dtheta):
             X.append(x)
             Y.append(y)
             Valores.append(valor)
-    
-    for item in Valores:
-        item = str(Valores)
-    
+
     fig = ex.scatter(x=X, y=Y, color=Valores)
     fig.show()
