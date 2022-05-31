@@ -3,6 +3,8 @@ from coeficients import *
 from liebmann import *
 from cria_malha import *
 from plots import *
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def define_condicao(i, j, dr, dtheta):
     #verifica em qual condicao esta o ponto i, j da malha
@@ -80,7 +82,7 @@ def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
     '''
     condicao = define_condicao(i, j, dr, dtheta)
 
-    if (condicao==0):
+    if (condicao==0): 
         coef = compute_uper_border(sigmaA, deltaPhi, deltaR, R)
     elif (condicao==1):
         coef = compute_inside(sigmaB, deltaPhi, deltaR, R) #BORDA INFERIOR-DUPLICAR
@@ -115,10 +117,29 @@ def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
 
     return coef @ adjacentes
 
-if __name__ == "__main__":
-    dr = 0.001
-    dtheta = np.deg2rad(1)
+
+def main():
+    #definicao de propriedades 
+    dr = 0.0005
+    dtheta = np.deg2rad(0.5)
+    lamb = 1.5
+    erro_des = 1e-2
+
+    #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
+
+    print(f"Matriz: {M.shape}")
+
+    M_ans = liebmann(M, func=function, lamb=lamb, erro_des=erro_des)
+
+    cria_plot(M_ans, dr, dtheta)
+
+
+if __name__ == "__main__":
+    dr = 0.0005
+    dtheta = np.deg2rad(0.5)
+    M = cria_malha(dr, dtheta)
+    print(M.shape)
 
     for i in range(M.shape[0]):
         for j in range(M.shape[1]):
