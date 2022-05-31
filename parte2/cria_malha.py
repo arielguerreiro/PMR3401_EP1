@@ -16,7 +16,7 @@ def cria_malha(dr, dtheta):
     n_r = (max(props_geo['R_A']) - min(props_geo['R_A']))/dr
     n_theta = (max(props_geo["Theta_A"]) - min(props_geo["Theta_A"]))/dtheta 
     
-    print(n_r, n_theta)
+    ##print(n_r, n_theta)
 
     M = np.zeros((int(n_r+1), int(n_theta+1)))
 
