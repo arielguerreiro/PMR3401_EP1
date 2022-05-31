@@ -1,7 +1,16 @@
 import numpy as np
 
 def calcula_erro(M_novo, M_atual):
-    erro = np.abs(M_novo - M_atual)/M_novo
+    erro = np.zeros(M_atual.shape)
+
+    for i in range(M_atual.shape[0]):
+        for j in range(M_atual.shape[1]):
+            if(M_novo[i, j] == 0 and M_atual[i, j] == 0):
+                erro[i, j] = 0
+            elif(M_novo[i, j] == 0 and M_atual[i, j] == 0):
+                raise Exception("Divisão inválida: verificar")
+            else:
+                erro[i, j] = np.abs((M_novo[i, j] - M_atual[i, j])/M_novo[i, j])
     return erro
 
 def calcula_iteracao(M_atual, func, lamb, dr, dtheta):
@@ -37,15 +46,23 @@ def liebmann(M, func, lamb, erro_des, dr, dtheta, max_steps=1e3):
 
 if __name__ == '__main__':
 
-    def func(M, i, j):
-        return 1
+    from plots import cria_plot
+
+    def func(M, i, j, dr, dtheta):
+        return i + j
 
     M = np.zeros((5, 5))
+
+    dr = 1
+    dtheta = 0.1
 
     erro_des = 1e-3
     lamb = 1.5
 
-    M_ans = liebmann(M, func, lamb, erro_des)
+    M_ans = liebmann(M, func, lamb, erro_des, dr, dtheta)
 
     print(M_ans)
+
+    cria_plot(M_ans, dr, dtheta)
+    
 

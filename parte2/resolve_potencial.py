@@ -173,7 +173,7 @@ def main():
     #definicao de propriedades 
     dr = 0.0005
     dtheta = np.deg2rad(0.5)
-    lamb = 0.5
+    lamb = 1.5
     erro_des = 1e-2
 
     #cria matriz inicialmente zerada
@@ -186,7 +186,8 @@ def main():
                     lamb=lamb, 
                     erro_des=erro_des, 
                     dr=dr, 
-                    dtheta=dtheta)
+                    dtheta=dtheta,
+                    max_steps=1e3)
 
     cria_plot(M_ans, dr, dtheta)
 
