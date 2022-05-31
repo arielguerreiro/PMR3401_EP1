@@ -5,11 +5,13 @@ from cria_malha import *
 from plots import *
 import seaborn as sns
 import matplotlib.pyplot as plt
+from funcoes_potencial import *
 
 def define_condicao(i, j, dr, dtheta):
     #verifica em qual condicao esta o ponto i, j da malha
     raio = i*dr + min(props_geo['R_A'])
     theta = np.rad2deg(j*dtheta + min(props_geo['Theta_A']))
+    #angulos sao usados em graus nessa funcao para facilitar a analise
 
     if(theta >= 40): 
         return 0 # borda superior material A
@@ -76,6 +78,50 @@ def define_condicao(i, j, dr, dtheta):
         else:
             return 8
 
+
+def calcula_temp(M, i, j, dr, dtheta):
+    '''
+    Funcao que calcula a temperatura para um ponto i, j
+
+    10 condicoes necessarias
+    - 0: borda superior de A
+    - 1: borda inferior de B (regiao de simetria)
+    - 2: borda esquerda de B
+    - 3: borda direita de B
+    - 4: borda esquerda de A
+    - 5: borda direita de A
+    - 6: borda inferior de A (regiao de simetria)
+    - 7: borda superior de B
+    - 8: interior de A
+    - 9: interior de B
+    '''
+
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 0):
+        temp = sup_A(M, i, j, dr, dtheta)
+    elif(condicao == 1):
+        temp = inf_B(M, i, j, dr, dtheta)
+    elif(condicao == 2):
+        temp = esq_B(M, i, j, dr, dtheta)
+    elif(condicao == 3):
+        temp = dir_B(M, i, j, dr, dtheta)
+    elif(condicao == 4):
+        temp = esq_A(M, i, j, dr, dtheta)
+    elif(condicao == 5):
+        temp = dir_A(M, i, j, dr, dtheta)
+    elif(condicao == 6):
+        temp = inf_A(M, i, j, dr, dtheta)
+    elif(condicao == 7):
+        temp = sup_B(M, i, j, dr, dtheta)
+    elif(condicao == 8):
+        temp = inter_A(M, i, j, dr, dtheta)
+    elif(condicao == 9):
+        temp = inter_B(M, i, j, dr, dtheta)
+    
+    return temp
+
+
 def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
     '''
     função que retorna o resultado para V{i,j} com base em seus termos adjacentes.
@@ -130,22 +176,32 @@ def main():
 
     print(f"Matriz: {M.shape}")
 
-    M_ans = liebmann(M, func=function, lamb=lamb, erro_des=erro_des)
+    M_ans = liebmann(M,
+                    func=calcula_temp, 
+                    lamb=lamb, 
+                    erro_des=erro_des, 
+                    dr=dr, 
+                    dtheta=dtheta)
 
     cria_plot(M_ans, dr, dtheta)
 
 
 if __name__ == "__main__":
-    dr = 0.0005
-    dtheta = np.deg2rad(0.5)
-    M = cria_malha(dr, dtheta)
-    print(M.shape)
 
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            M[i,j]=define_condicao(i,j, dr, dtheta)
+    main()
+    # print(props_elet)
+    # print(props_geo)
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    cria_plot(M, dr, dtheta)
+    # dr = 0.0005
+    # dtheta = np.deg2rad(0.5)
+    # M = cria_malha(dr, dtheta)
+    # print(M.shape)
+
+    # for i in range(M.shape[0]):
+    #     for j in range(M.shape[1]):
+    #         M[i,j]=define_condicao(i,j, dr, dtheta)
+
+    # import seaborn as sns
+    # import matplotlib.pyplot as plt
+    # cria_plot(M, dr, dtheta)
 
