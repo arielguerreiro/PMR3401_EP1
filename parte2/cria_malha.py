@@ -18,7 +18,7 @@ def cria_malha(dr, dtheta):
     
     print(n_r, n_theta)
 
-    M = np.zeros((int(n_r), int(n_theta)))
+    M = np.zeros((int(n_r+1), int(n_theta+1)))
 
     return M
 
