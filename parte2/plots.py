@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     for i in range(M.shape[0]):
         for j in range(M.shape[1]):
-            M[i,j]=define_condicao(i,j, dr, dtheta)
+            M[i, j] = define_condicao(i,j, dr, dtheta)
 
     import seaborn as sns
     import matplotlib.pyplot as plt
