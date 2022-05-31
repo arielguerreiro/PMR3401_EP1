@@ -57,8 +57,39 @@ def sup_B(M, i, j, dr, dtheta):
 
 #8: interior de A
 def inter_A(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigma = props_elet['sigma_A']
+
+    coefs = np.array([
+        -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)), 
+        (sigma/dr)*((1/dr) - (1/2*raio)), 
+        (sigma/dr)*((1/dr) + (1/2*raio)),
+        (sigma)/((dtheta**2)*(raio**2)), 
+        (sigma)/((dtheta**2)*(raio**2)) 
+    ])
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
+
+    return (coefs[1:] @ pontos)/coefs[0]
+
 
 #9: interior de B
 def inter_B(M, i, j, dr, dtheta):
-    pass
+    raio = 0.03 + i*dr
+    angulo = j*dtheta #em radianos
+
+    sigma = props_elet['sigma_B']
+
+    coefs = np.array([
+        -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)), 
+        (sigma/dr)*((1/dr) - (1/2*raio)), 
+        (sigma/dr)*((1/dr) + (1/2*raio)),
+        (sigma)/((dtheta**2)*(raio**2)), 
+        (sigma)/((dtheta**2)*(raio**2)) 
+    ])
+
+    pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
+
+    return (coefs[1:] @ pontos)/coefs[0]
