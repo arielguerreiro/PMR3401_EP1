@@ -1,7 +1,6 @@
 import numpy as np
 from liebmann import *
 from cria_malha import *
-from plots import *
 from funcoes_potencial import *
 
 def define_condicao(i, j, dr, dtheta):
@@ -17,66 +16,46 @@ def define_condicao(i, j, dr, dtheta):
             return 5
         else:
             return 0 # borda superior material A
-    
     elif(theta == 0):
         if(0.05 < raio < 0.08):
             return 1 #borda inferior do material B - duplicar 
-
         elif(raio == 0.05):
             return 2 #borda esquerda do material B
-
         elif(raio == 0.08):
             return 3 #borda direita do material B
-
         elif(raio == 0.03):
             return 4 #borda esquerda do material A - ajuste de matriz
-
         elif(raio == 0.11):
             return 5 #borda direita do material A - ajuste de matriz 
-
         else:
             return 6 #borda inferior do material A - duplicar
-
-    
     elif(theta == 18):
         if(0.05 < raio < 0.08):
             return 7 #borda superior do material B
-            
         if(raio == 0.11):
             return 5 #borda direita do material A
-
         elif(raio == 0.03):
             return 4 #borda esquerda do material A
         else:
             return 8 #interior do material A 
-
     elif(theta > 18):
-
         if(raio == 0.11):
             return 5 #borda direita do material A
-
         elif(raio == 0.03):
             return 4 #borda esquerda do material A
-
         else:
             return 8 #interior do material A
-
     else:
         if(0.05 < raio < 0.08):
             return 9 #interior B 
-
         elif(raio == 0.05):
             return 2 
-
         elif(raio == 0.08):
             return 3 
-
         elif(raio == 0.03):
             return 4 
-
         elif(raio == 0.11):
             return 5
-
         else:
             return 8
 
@@ -123,16 +102,7 @@ def calcula_tensao(M, i, j, dr, dtheta):
     
     return np.float(temp)
 
-def main():
-    #definicao de propriedades 
-    #dr = 0.0005
-    #dtheta = np.deg2rad(0.5)
-    
-    dr = 0.001
-    dtheta = np.deg2rad(2)
-
-    lamb = 1.5
-    erro_des = 1e-4
+def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -148,10 +118,8 @@ def main():
                     max_steps=1.e4)
 
     #cria_plot(M_ans, dr, dtheta)
-    heatmap_2d(M_ans, dr, dtheta)
-    surf_3d(M_ans, dr, dtheta)
-
+    return M_ans
 
 if __name__ == "__main__":
-    main()
+    resolve_potencial()
 
