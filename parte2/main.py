@@ -11,13 +11,11 @@ V_ans = resolve_potencial(
     dr=dr,
     dtheta=dtheta,
     lamb=1.75,
-    erro_des=1e-2
+    erro_des=1e-4
     )
 
 heatmap_2d(V_ans, dr, dtheta)
 surf_3d(V_ans, dr, dtheta)
-
-import pdb; pdb.set_trace()
 
 J_ans = calcula_J(V_ans, dr, dtheta)
 

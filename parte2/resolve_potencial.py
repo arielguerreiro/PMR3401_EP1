@@ -182,8 +182,8 @@ def calcula_J(V_ans, dr, dtheta):
     J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
     for i in range(J.shape[0]):
         for j in range(J.shape[1]):
-            J[i, j, 0] = calcula_Qr(V_ans, i, j, dr, dtheta)
-            J[i, j, 1] = calcula_Qtheta(V_ans, i, j, dr, dtheta)
+            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta)
+            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta)
 
     return J
 

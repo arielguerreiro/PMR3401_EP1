@@ -51,20 +51,34 @@ def surf_3d(M, dr, dtheta):
 
 def quiver(J, dr, dtheta):
 
-    import pdb; pdb.set_trace()
-
-    raios = [0.03 + i*dr for i in range(M.shape[0])]
-    angulos = [j*dtheta for j in range(M.shape[1])]
+    raios = [0.03 + i*dr for i in range(J.shape[0])]
+    angulos = [j*dtheta for j in range(J.shape[1])]
 
     ang_mesh, raio_mesh = np.meshgrid(angulos, raios)
 
     x_mesh = raio_mesh*np.cos(ang_mesh)
     y_mesh = raio_mesh*np.sin(ang_mesh)
 
-    origin = J[:, :, 0]
-    
-    plt.quiver(x_mesh, y_mesh, J[:, :, 0], J[:, :, 1])
-    plt.show()
+    x_vec = np.zeros((J.shape[0], J.shape[1]))
+    y_vec = np.zeros((J.shape[0], J.shape[1]))
+
+    for i in range(J.shape[0]):
+        for j in range(J.shape[1]):
+            raio = 0.03 + i*dr
+            angulo = j*dtheta
+            #projeta
+            qr = J[i, j, 0]
+            qtheta = J[i, j, 1]
+            x_vec[i, j] = (qr - qtheta)*np.cos(angulo)
+            y_vec[i, j] = (qr + qtheta)*np.sin(angulo)
+
+    fig1 = ff.create_quiver(x_mesh, y_mesh, x_vec, y_vec)
+    fig2 = ff.create_quiver(x_mesh, -y_mesh, x_vec, -y_vec)
+
+    fig1.add_traces(data = fig2.data)
+    fig1.update_traces(marker=dict(color='blue'))
+
+    fig1.show()
 
 
 if __name__ == '__main__':
