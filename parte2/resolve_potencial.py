@@ -171,8 +171,7 @@ def calcula_Qtheta(V, i, j, dr, dtheta):
         try:
             qtheta = props_elet['sigma_A']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
         except:
-            qtheta = 0
-            print("Shame")
+            qtheta = 0 #despreza pontos extremos de A
     else: #central B
         qtheta = props_elet['sigma_B']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
 
@@ -202,6 +201,16 @@ def calcula_qponto(J_ans, dr, dtheta):
             qdot[i, j] = -np.linalg.norm(J_ans[i, j, :])/sigma
 
     return qdot
+
+def calcula_corrente(J_ans, dr, dtheta):
+    #aproxima integral para soma
+    soma = 0
+
+    for i in range(J_ans.shape[0]): #caminha em r
+        #somente a componente de r do vetor eh relevante
+        soma += J_ans[i, 0, 0]
+
+    return soma
 
 if __name__ == "__main__":
     resolve_potencial()
