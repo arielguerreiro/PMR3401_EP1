@@ -29,13 +29,6 @@ def sup_A(M, i, j, dr, dtheta):
     angulo = j*dtheta #em radianos
 
     sigma = props_elet['sigma_A']
-    
-    # coefs = np.array([
-    #     -2*sigma*(1/(dr**2) + 1/(dtheta**2)*(raio**2)),
-    #     (sigma/(dr**2)), 
-    #     (sigma/(dr**2)), 
-    #     (2/(dtheta**2)*(sigma/(raio**2)))
-    # ]) 
 
     coefs = np.array([
         4*(dr**2 + dtheta**2 * raio**2),
@@ -86,14 +79,6 @@ def esq_B(M, i, j, dr, dtheta):
         (alpha - beta)*dr**2,
     ])
 
-    # coefs = np.array([
-    #     (2*(sigmaB-sigmaA)/(dr**2)) - 2*(sigmaA+sigmaB)/((raio**2)*(dtheta**2)),
-    #     (2*(sigmaA)/(dr**2)) - (sigmaA+sigmaB)/(2*(dr)*(raio)),
-    #     (-2*(sigmaB)/(dr**2)) + (sigmaA+sigmaB)/(2*(dr)*(raio)),
-    #     (sigmaA+sigmaB)/((dtheta**2)*(raio**2)),
-    #     (sigmaA+sigmaB)/((dtheta**2)*(raio**2))
-    # ]) 
-
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
     return (coefs[1:] @ pontos)/coefs[0]
@@ -116,14 +101,6 @@ def dir_B(M, i, j, dr, dtheta):
         (alpha - beta)*dr**2,
         (alpha - beta)*dr**2,
     ])
-
-    # coefs = np.array([
-    #     (2*(sigmaA-sigmaB)/(dr**2)) - 2*(sigmaA+sigmaB)/((raio**2)*(dtheta**2)),
-    #     (2*(sigmaB)/(dr**2)) - (sigmaA+sigmaB)/(2*(dr)*(raio)),
-    #     (-2*(sigmaA)/(dr**2)) + (sigmaA+sigmaB)/(2*(dr)*(raio)),
-    #     (sigmaA+sigmaB)/((dtheta**2)*(raio**2)),
-    #     (sigmaA+sigmaB)/((dtheta**2)*(raio**2))
-    # ]) 
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
@@ -248,13 +225,3 @@ if __name__ == '__main__':
     erro_des = 1e-4
 
     M = cria_malha(dr, dtheta)
-    
-
-
-    # coefs = np.array([
-    #     4*dr**2 + 4*dtheta**2*raio**2,
-    #     -dr*dtheta**2*raio + 2*dtheta**2*raio**2,
-    #     dr*dtheta**2*raio,
-    #     4*dr**2,
-        
-    # ])

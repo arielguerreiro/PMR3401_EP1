@@ -1,10 +1,7 @@
-import numpy as np 
-from coeficients import *
+import numpy as np
 from liebmann import *
 from cria_malha import *
 from plots import *
-import seaborn as sns
-import matplotlib.pyplot as plt
 from funcoes_potencial import *
 
 def define_condicao(i, j, dr, dtheta):
@@ -84,9 +81,9 @@ def define_condicao(i, j, dr, dtheta):
             return 8
 
 
-def calcula_temp(M, i, j, dr, dtheta):
+def calcula_tensao(M, i, j, dr, dtheta):
     '''
-    Funcao que calcula a temperatura para um ponto i, j
+    Funcao que calcula a tensao para um ponto i, j
 
     10 condicoes necessarias
     - 0: borda superior de A
@@ -124,58 +121,7 @@ def calcula_temp(M, i, j, dr, dtheta):
     elif(condicao == 9):
         temp = inter_B(M, i, j, dr, dtheta)
     
-    # if temp > 1e3:
-    #     import pdb
-    #     print(condicao, i, j, temp)
-    #     cria_plot(M, dr, dtheta)
-    #     pdb.set_trace()
-
-    
-
     return np.float(temp)
-
-
-def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
-    '''
-    função que retorna o resultado para V{i,j} com base em seus termos adjacentes.
-    '''
-    condicao = define_condicao(i, j, dr, dtheta)
-
-    if (condicao==0): 
-        coef = compute_uper_border(sigmaA, deltaPhi, deltaR, R)
-    elif (condicao==1):
-        coef = compute_inside(sigmaB, deltaPhi, deltaR, R) #BORDA INFERIOR-DUPLICAR
-    elif (condicao==2):
-        coef = compute_borderAB_byR_left(sigmaA, sigmaB, deltaPhi, deltaR, R)
-    elif (condicao==3):
-        coef = compute_borderAB_byR_right(sigmaA, sigmaB, deltaPhi, deltaR, R)
-    elif (condicao==4):
-        coef = np.zeros(3) # lidar com essa borda
-    elif (condicao==5):
-        coef = np.zeros(3) # lidar com essa borda 
-    elif (condicao==6):
-        coef = compute_inside(sigmaA, deltaPhi, deltaR, R) #BORDA INFERIOR-DUPLICAR
-    elif (condicao==7):
-        coef = compute_borderAB_byPHI(sigmaA, sigmaB, deltaPhi, deltaR, R)
-    elif (condicao==8):
-        coef = compute_inside(sigmaA, deltaPhi, deltaR, R)
-    elif (condicao==9):
-        coef = compute_inside(sigmaB, deltaPhi, deltaR, R)
-    else:
-        raise Exception("Caso invalido ou não documentado")
-
-    #define os números adjacentes:
-    if (condicao==1 or condicao==6):
-        #em casos de borda inferior, não há j-1, mas sim seu simétrico j+1 
-        adjacentes = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
-    else:
-        adjacentes = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
-
-    print(f"COEF: {coef}")
-    print(f"ADJ: {adjacentes}")
-
-    return coef @ adjacentes
-
 
 def main():
     #definicao de propriedades 
@@ -194,7 +140,7 @@ def main():
     print(f"Matriz: {M.shape}")
 
     M_ans = liebmann(M,
-                    func=calcula_temp, 
+                    func=calcula_tensao, 
                     lamb=lamb, 
                     erro_des=erro_des, 
                     dr=dr, 
@@ -207,21 +153,5 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
-    # print(props_elet)
-    # print(props_geo)
-
-    # dr = 0.0005
-    # dtheta = np.deg2rad(0.5)
-    # M = cria_malha(dr, dtheta)
-    # print(M.shape)
-
-    # for i in range(M.shape[0]):
-    #     for j in range(M.shape[1]):
-    #         M[i,j]=define_condicao(i,j, dr, dtheta)
-
-    # import seaborn as sns
-    # import matplotlib.pyplot as plt
-    # cria_plot(M, dr, dtheta)
 

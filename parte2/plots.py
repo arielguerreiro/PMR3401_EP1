@@ -3,11 +3,9 @@ import numpy as np
 import seaborn as sns
 import plotly.express as ex
 import plotly.graph_objects as go
-import pandas as pd
 
+def heatmap_2d(M, dr, dtheta, tipo='C'):
 
-def heatmap_2d(M, dr, dtheta):
-    sns.color_palette("tab10")
     X = []
     Y = []
     Valores = []
@@ -26,11 +24,14 @@ def heatmap_2d(M, dr, dtheta):
             Y.append(y)
             Valores.append(valor)
             
+            #reflexao no eixo X
             X.append(x)
             Y.append(-y)
             Valores.append(valor)
 
     X, Y = np.array(X), np.array(Y)
+    if tipo == 'D':
+        Valores = [str(i) for i in Valores]
     fig = ex.scatter(x=X, y=Y, color=Valores)
     fig.show()
 
@@ -43,8 +44,6 @@ def surf_3d(M, dr, dtheta):
 
     x_mesh = raio_mesh*np.cos(ang_mesh)
     y_mesh = raio_mesh*np.sin(ang_mesh)
-
-    import pdb; pdb.set_trace()
 
     fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh), go.Surface(z=M, x=x_mesh, y=-y_mesh)])
     fig.show()
@@ -65,4 +64,4 @@ if __name__ == '__main__':
 
     import seaborn as sns
     import matplotlib.pyplot as plt
-    heatmap_2d(M, dr, dtheta)
+    heatmap_2d(M, dr, dtheta, 'C')
