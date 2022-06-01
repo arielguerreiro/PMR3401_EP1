@@ -1,136 +1,208 @@
-import numpy as np 
-from coeficients import *
+import numpy as np
 from liebmann import *
-from cria_malha import *
-from plots import *
+from funcoes_potencial import *
+
+props_elet = {
+    "sigma_A": 5e-6,
+    "sigma_B": 1e-5,
+}
+
+props_geo = {
+    "R_A" : [0.03, 0.08 + 0.03],
+    "R_B" : [0.03 + 0.02, 0.03 + 0.05],
+    "Theta_A" : [0, np.deg2rad(40)],
+    "Theta_B" : [0, np.deg2rad(18)],
+}
+
+def cria_malha(dr, dtheta):
+    
+    #cria matriz inicial
+    n_r = (max(props_geo['R_A']) - min(props_geo['R_A']))/dr
+    n_theta = (max(props_geo["Theta_A"]) - min(props_geo["Theta_A"]))/dtheta 
+    
+    ##print(n_r, n_theta)
+
+    M = np.zeros((int(n_r+1), int(n_theta+1)))
+
+    return M
 
 
-def function(M, i, j):
-    '''
-    função que retorna o resultado para V{i,j} com base em seus termos adjacentes.
-    '''
-    coef = compute_inside(sigma=3, deltaPhi=1, deltaR=2, R=1)
-    adjacentes = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
-
-    print(f"COEF: {coef}")
-    print(f"ADJ: {adjacentes}")
-
-    return coef @ adjacentes
-
-def verifica_condicao(i, j, dr, dtheta):
+def define_condicao(i, j, dr, dtheta):
     #verifica em qual condicao esta o ponto i, j da malha
     raio = i*dr + min(props_geo['R_A'])
     theta = np.rad2deg(j*dtheta + min(props_geo['Theta_A']))
+    #angulos sao usados em graus nessa funcao para facilitar a analise
 
-    print(f"Raio = {raio}, Theta = {theta}")
-
-    if(theta >= 40): 
-        print("Borda superior do material A")
-
-        return 0 
-    
+    if(theta >= 40):
+        if(raio == 0.03):
+            return 4
+        if(raio == 0.11):
+            return 5
+        else:
+            return 0 # borda superior material A
     elif(theta == 0):
         if(0.05 < raio < 0.08):
-            print("borda inferior do material B")
-
-            return 1 #falta
-
+            return 1 #borda inferior do material B - duplicar 
         elif(raio == 0.05):
-            print("borda esquerda do material B")
-
-            return 2 
+            return 1 #borda esquerda do material B (antes 2)
         elif(raio == 0.08):
-            print("borda direita do material B")
-
-            return 3 #falta
+            return 1 #borda direita do material B (antes 3)
         elif(raio == 0.03):
-            print("borda esquerda do material A")
-
-            return 4 #ajuste 
+            return 4 #borda esquerda do material A - ajuste de matriz
         elif(raio == 0.11):
-            print("borda direita do material A")
-
-            return 5 #ajuste 
+            return 5 #borda direita do material A - ajuste de matriz 
         else:
-            print("borda inferior do material A")
-
-            return 6 #falta
-
-    
+            return 6 #borda inferior do material A - duplicar
     elif(theta == 18):
         if(0.05 < raio < 0.08):
-            print("borda superior do material B")
-
-            return 7 #AB byPhi
-            
+            return 7 #borda superior do material B
         if(raio == 0.11):
-            print("borda direita do material A")
-
-            return 5
-
+            return 5 #borda direita do material A
         elif(raio == 0.03):
-            print("borda esquerda do material A")
-
-            return 4
+            return 4 #borda esquerda do material A
         else:
-            print("interior do material A")
-
-            return 8 #interior A
-
+            return 8 #interior do material A 
     elif(theta > 18):
-
         if(raio == 0.11):
-            print("borda direita do material A")
-
-            return 5
-
+            return 5 #borda direita do material A
         elif(raio == 0.03):
-            print("borda esquerda do material A")
-
-            return 4
-
+            return 4 #borda esquerda do material A
         else:
-            print("interior do material A")
-
-            return 8 
-
+            return 8 #interior do material A
     else:
         if(0.05 < raio < 0.08):
-            print("interior do material B")
-
             return 9 #interior B 
         elif(raio == 0.05):
-            print("borda esquerda do material B")
-
-            return 2
+            return 2 
         elif(raio == 0.08):
-            print("borda direita do material B")
-
-            return 3
+            return 3 
         elif(raio == 0.03):
-            print("borda esquerda do material A")
-
             return 4 
         elif(raio == 0.11):
-            print("borda direita do material A")
-
             return 5
         else:
-            print("interior do material A")
-
             return 8
 
-if __name__ == "__main__":
-    dr = 0.001
-    dtheta = np.deg2rad(1)
+
+def calcula_tensao(M, i, j, dr, dtheta):
+    '''
+    Funcao que calcula a tensao para um ponto i, j
+
+    10 condicoes necessarias
+    - 0: borda superior de A
+    - 1: borda inferior de B (regiao de simetria)
+    - 2: borda esquerda de B
+    - 3: borda direita de B
+    - 4: borda esquerda de A
+    - 5: borda direita de A
+    - 6: borda inferior de A (regiao de simetria)
+    - 7: borda superior de B
+    - 8: interior de A
+    - 9: interior de B
+    '''
+
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 0):
+        temp = sup_A(M, i, j, dr, dtheta)
+    elif(condicao == 1):
+        temp = inf_B(M, i, j, dr, dtheta)
+    elif(condicao == 2):
+        temp = esq_B(M, i, j, dr, dtheta)
+    elif(condicao == 3):
+        temp = dir_B(M, i, j, dr, dtheta)
+    elif(condicao == 4):
+        temp = esq_A(M, i, j, dr, dtheta)
+    elif(condicao == 5):
+        temp = dir_A(M, i, j, dr, dtheta)
+    elif(condicao == 6):
+        temp = inf_A(M, i, j, dr, dtheta)
+    elif(condicao == 7):
+        temp = sup_B(M, i, j, dr, dtheta)
+    elif(condicao == 8):
+        temp = inter_A(M, i, j, dr, dtheta)
+    elif(condicao == 9):
+        temp = inter_B(M, i, j, dr, dtheta)
+    
+    return np.float(temp)
+
+def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
+
+    #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
 
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            M[i,j]=verifica_condicao(i,j, dr, dtheta)
+    print(f"Matriz: {M.shape}")
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    sns.color_palette("tab10")
-    cria_plot(M, dr, dtheta)
+    M_ans = liebmann(M,
+                    func=calcula_tensao, 
+                    lamb=lamb, 
+                    erro_des=erro_des, 
+                    dr=dr, 
+                    dtheta=dtheta,
+                    max_steps=1.e4)
+
+    #cria_plot(M_ans, dr, dtheta)
+    return M_ans
+
+def calcula_Qr(V, i, j, dr, dtheta):
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 4): #borda esquerda de A
+        #progressiva
+        qr = props_elet['sigma_A'] * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
+    elif(condicao == 5): #borda direita de A
+        #regressiva
+        qr = props_elet['sigma_A'] * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
+    elif(condicao in [0, 8, 6]): #interior de A
+        qr = props_elet['sigma_A']* (V[i+1, j] - V[i-1,j])/(2*dr)
+    else: #interior de B 
+        qr = props_elet['sigma_B']* (V[i+1, j] - V[i-1,j])/(2*dr)
+
+    return qr
+
+def calcula_Qtheta(V, i, j, dr, dtheta):
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 0): #regressiva
+        qtheta = props_elet['sigma_A'] * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
+    elif(condicao in [6, 1]): #central simetrica A
+        qtheta = 0
+    elif(condicao in [4, 5, 8]): #central A
+        try:
+            qtheta = props_elet['sigma_A']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        except:
+            qtheta = 0
+            print("Shame")
+    else: #central B
+        qtheta = props_elet['sigma_B']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+
+    return qtheta
+
+def calcula_J(V_ans, dr, dtheta):
+    J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
+    for i in range(J.shape[0]):
+        for j in range(J.shape[1]):
+            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta)
+            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta)
+
+    return J
+
+def calcula_qponto(J_ans, dr, dtheta):
+    qdot = np.zeros((J_ans.shape[0], J_ans.shape[1]))
+
+    for i in range(qdot.shape[0]):
+        for j in range(qdot.shape[1]):
+            condicao = define_condicao(i, j, dr, dtheta)
+            
+            if(condicao in [0, 4, 5, 6, 8]):
+                sigma = props_elet['sigma_A']
+            else:
+                sigma = props_elet['sigma_B']
+            
+            qdot[i, j] = -np.linalg.norm(J_ans[i, j, :])/sigma
+
+    return qdot
+
+if __name__ == "__main__":
+    resolve_potencial()
 
