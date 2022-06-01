@@ -25,7 +25,12 @@ def heatmap_2d(M, dr, dtheta):
             X.append(x)
             Y.append(y)
             Valores.append(valor)
+            
+            X.append(x)
+            Y.append(-y)
+            Valores.append(valor)
 
+    X, Y = np.array(X), np.array(Y)
     fig = ex.scatter(x=X, y=Y, color=Valores)
     fig.show()
 
@@ -39,48 +44,11 @@ def surf_3d(M, dr, dtheta):
     x_mesh = raio_mesh*np.cos(ang_mesh)
     y_mesh = raio_mesh*np.sin(ang_mesh)
 
-    fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh)])
-    fig.show()
-
-
-def cria_plots(M, dr, dtheta):
-
-    sns.color_palette("tab10")
-
-    X = []
-    Y = []
-    Valores = []
-
-    for i in range(M.shape[0]): #raio
-        for j in range(M.shape[1]): #angulo
-            raio = 0.03 + i*dr
-            angulo = j*dtheta
-
-            x = raio*np.cos(angulo)
-            y = raio*np.sin(angulo)
-            #print(f"\nPara j={j}: ang = {np.rad2deg(angulo):.3f}, x = {x:.4f}, y = {y:.4f}")
-
-            valor = M[i,j]
-
-            X.append(x)
-            Y.append(y)
-            Valores.append(valor)
-
-    df = pd.DataFrame({'X': X, 'Y': Y, 'Tensao': Valores})
-
-    fig = ex.scatter(x=X, y=Y, color=Valores)
-    fig.show()
-
-    #figura 3d
-    z = df.values
-    xx, yy = np.meshgrid(M[0, :], M[:, 0])
-    fig = go.Figure(data=[go.Surface(z=M, x=xx, y=yy)])
-    # fig.update_layout(title='Mt Bruno Elevation', autosize=False,
-    #               width=500, height=500,
-    #               margin=dict(l=65, r=50, b=65, t=90))
-    fig.show()
-
     import pdb; pdb.set_trace()
+
+    fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh), go.Surface(z=M, x=x_mesh, y=-y_mesh)])
+    fig.show()
+
 
 if __name__ == '__main__':
     from cria_malha import cria_malha
@@ -97,4 +65,4 @@ if __name__ == '__main__':
 
     import seaborn as sns
     import matplotlib.pyplot as plt
-    cria_plot(M, dr, dtheta)
+    heatmap_2d(M, dr, dtheta)
