@@ -5,7 +5,45 @@ import plotly.express as ex
 import plotly.graph_objects as go
 import pandas as pd
 
-def cria_plot(M, dr, dtheta):
+
+def heatmap_2d(M, dr, dtheta):
+    sns.color_palette("tab10")
+    X = []
+    Y = []
+    Valores = []
+
+    for i in range(M.shape[0]): #raio
+        for j in range(M.shape[1]): #angulo
+            raio = 0.03 + i*dr
+            angulo = j*dtheta
+
+            x = raio*np.cos(angulo)
+            y = raio*np.sin(angulo)
+            
+            valor = M[i,j]
+
+            X.append(x)
+            Y.append(y)
+            Valores.append(valor)
+
+    fig = ex.scatter(x=X, y=Y, color=Valores)
+    fig.show()
+
+def surf_3d(M, dr, dtheta):
+
+    raios = [0.03 + i*dr for i in range(M.shape[0])]
+    angulos = [j*dtheta for j in range(M.shape[1])]
+
+    ang_mesh, raio_mesh = np.meshgrid(angulos, raios)
+
+    x_mesh = raio_mesh*np.cos(ang_mesh)
+    y_mesh = raio_mesh*np.sin(ang_mesh)
+
+    fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh)])
+    fig.show()
+
+
+def cria_plots(M, dr, dtheta):
 
     sns.color_palette("tab10")
 

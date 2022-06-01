@@ -201,7 +201,9 @@ def main():
                     dtheta=dtheta,
                     max_steps=1.e4)
 
-    cria_plot(M_ans, dr, dtheta)
+    #cria_plot(M_ans, dr, dtheta)
+    heatmap_2d(M_ans, dr, dtheta)
+    surf_3d(M_ans, dr, dtheta)
 
 
 if __name__ == "__main__":
