@@ -36,33 +36,10 @@ def liebmann(M, func, lamb, erro_des, dr, dtheta, max_steps=1e3):
         M_atual = np.copy(M_novo)
         i += 1
 
-        print(f"Iteração {i}: erro {np.max(erro):.4f}")
+        print(f"Iteração {i}: erro {np.max(erro):.5f}", end='\r')
 
         if(i > max_steps):
             break
 
     print(f"Erro {np.max(erro):.4f} atingido com {i} steps")
     return M_atual
-
-if __name__ == '__main__':
-
-    from plots import cria_plot
-
-    def func(M, i, j, dr, dtheta):
-        return i + j
-
-    M = np.zeros((5, 5))
-
-    dr = 1
-    dtheta = 0.1
-
-    erro_des = 1e-3
-    lamb = 1.5
-
-    M_ans = liebmann(M, func, lamb, erro_des, dr, dtheta)
-
-    print(M_ans)
-
-    cria_plot(M_ans, dr, dtheta)
-    
-

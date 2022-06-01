@@ -1,7 +1,31 @@
 import numpy as np
 from liebmann import *
-from cria_malha import *
 from funcoes_potencial import *
+
+props_elet = {
+    "sigma_A": 5e-6,
+    "sigma_B": 1e-5,
+}
+
+props_geo = {
+    "R_A" : [0.03, 0.08 + 0.03],
+    "R_B" : [0.03 + 0.02, 0.03 + 0.05],
+    "Theta_A" : [0, np.deg2rad(40)],
+    "Theta_B" : [0, np.deg2rad(18)],
+}
+
+def cria_malha(dr, dtheta):
+    
+    #cria matriz inicial
+    n_r = (max(props_geo['R_A']) - min(props_geo['R_A']))/dr
+    n_theta = (max(props_geo["Theta_A"]) - min(props_geo["Theta_A"]))/dtheta 
+    
+    ##print(n_r, n_theta)
+
+    M = np.zeros((int(n_r+1), int(n_theta+1)))
+
+    return M
+
 
 def define_condicao(i, j, dr, dtheta):
     #verifica em qual condicao esta o ponto i, j da malha
@@ -20,9 +44,9 @@ def define_condicao(i, j, dr, dtheta):
         if(0.05 < raio < 0.08):
             return 1 #borda inferior do material B - duplicar 
         elif(raio == 0.05):
-            return 2 #borda esquerda do material B
+            return 1 #borda esquerda do material B (antes 2)
         elif(raio == 0.08):
-            return 3 #borda direita do material B
+            return 1 #borda direita do material B (antes 3)
         elif(raio == 0.03):
             return 4 #borda esquerda do material A - ajuste de matriz
         elif(raio == 0.11):
@@ -119,6 +143,65 @@ def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
 
     #cria_plot(M_ans, dr, dtheta)
     return M_ans
+
+def calcula_Qr(V, i, j, dr, dtheta):
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 4): #borda esquerda de A
+        #progressiva
+        qr = props_elet['sigma_A'] * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
+    elif(condicao == 5): #borda direita de A
+        #regressiva
+        qr = props_elet['sigma_A'] * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
+    elif(condicao in [0, 8, 6]): #interior de A
+        qr = props_elet['sigma_A']* (V[i+1, j] - V[i-1,j])/(2*dr)
+    else: #interior de B 
+        qr = props_elet['sigma_B']* (V[i+1, j] - V[i-1,j])/(2*dr)
+
+    return qr
+
+def calcula_Qtheta(V, i, j, dr, dtheta):
+    condicao = define_condicao(i, j, dr, dtheta)
+
+    if(condicao == 0): #regressiva
+        qtheta = props_elet['sigma_A'] * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
+    elif(condicao in [6, 1]): #central simetrica A
+        qtheta = 0
+    elif(condicao in [4, 5, 8]): #central A
+        try:
+            qtheta = props_elet['sigma_A']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        except:
+            qtheta = 0
+            print("Shame")
+    else: #central B
+        qtheta = props_elet['sigma_B']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+
+    return qtheta
+
+def calcula_J(V_ans, dr, dtheta):
+    J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
+    for i in range(J.shape[0]):
+        for j in range(J.shape[1]):
+            J[i, j, 0] = calcula_Qr(V_ans, i, j, dr, dtheta)
+            J[i, j, 1] = calcula_Qtheta(V_ans, i, j, dr, dtheta)
+
+    return J
+
+def calcula_qponto(J_ans, dr, dtheta):
+    qdot = np.zeros((J_ans.shape[0], J_ans.shape[1]))
+
+    for i in range(qdot.shape[0]):
+        for j in range(qdot.shape[1]):
+            condicao = define_condicao(i, j, dr, dtheta)
+            
+            if(condicao in [0, 4, 5, 6, 8]):
+                sigma = props_elet['sigma_A']
+            else:
+                sigma = props_elet['sigma_B']
+            
+            qdot[i, j] = -np.linalg.norm(J_ans[i, j, :])/sigma
+
+    return qdot
 
 if __name__ == "__main__":
     resolve_potencial()
