@@ -7,8 +7,8 @@ def calcula_erro(M_novo, M_atual):
         for j in range(M_atual.shape[1]):
             if(M_novo[i, j] == 0 and M_atual[i, j] == 0):
                 erro[i, j] = 0
-            elif(M_novo[i, j] == 0 and M_atual[i, j] == 0):
-                raise Exception("Divisão inválida: verificar")
+            elif(M_novo[i, j] == 0 and M_atual[i, j] != 0):
+                import pdb; pdb.set_trace()
             else:
                 erro[i, j] = np.abs((M_novo[i, j] - M_atual[i, j])/M_novo[i, j])
     return erro

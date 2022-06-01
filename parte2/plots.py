@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import seaborn as sns
 import plotly.express as ex
+import plotly.graph_objects as go
+import pandas as pd
 
 def cria_plot(M, dr, dtheta):
 
@@ -26,8 +28,21 @@ def cria_plot(M, dr, dtheta):
             Y.append(y)
             Valores.append(valor)
 
+    df = pd.DataFrame({'X': X, 'Y': Y, 'Tensao': Valores})
+
     fig = ex.scatter(x=X, y=Y, color=Valores)
     fig.show()
+
+    #figura 3d
+    z = df.values
+    xx, yy = np.meshgrid(M[0, :], M[:, 0])
+    fig = go.Figure(data=[go.Surface(z=M, x=xx, y=yy)])
+    # fig.update_layout(title='Mt Bruno Elevation', autosize=False,
+    #               width=500, height=500,
+    #               margin=dict(l=65, r=50, b=65, t=90))
+    fig.show()
+
+    import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
     from cria_malha import cria_malha

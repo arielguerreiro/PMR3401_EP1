@@ -124,7 +124,15 @@ def calcula_temp(M, i, j, dr, dtheta):
     elif(condicao == 9):
         temp = inter_B(M, i, j, dr, dtheta)
     
-    return temp
+    # if temp > 1e3:
+    #     import pdb
+    #     print(condicao, i, j, temp)
+    #     cria_plot(M, dr, dtheta)
+    #     pdb.set_trace()
+
+    
+
+    return np.float(temp)
 
 
 def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
@@ -171,10 +179,14 @@ def function(M, i, j, sigmaA, sigmaB, deltaPhi, deltaR, R, dr, dtheta):
 
 def main():
     #definicao de propriedades 
-    dr = 0.0005
-    dtheta = np.deg2rad(0.5)
+    #dr = 0.0005
+    #dtheta = np.deg2rad(0.5)
+    
+    dr = 0.001
+    dtheta = np.deg2rad(2)
+
     lamb = 1.5
-    erro_des = 1e-2
+    erro_des = 1e-4
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -187,7 +199,7 @@ def main():
                     erro_des=erro_des, 
                     dr=dr, 
                     dtheta=dtheta,
-                    max_steps=1e3)
+                    max_steps=1.e4)
 
     cria_plot(M_ans, dr, dtheta)
 
