@@ -7,10 +7,11 @@ Lb = 0.5
 Rb = 20
 C = 0.002
 La = 0.01
-Ra = 200
+Ra = 2000
 
 
 def e(t):
+    #funcao da corrente eletrica
     return np.cos(t * 600) / La
 
 
@@ -33,12 +34,14 @@ def f(t, Y):
 
 
 if __name__ == '__main__':
-    delta_t = 0.0001
+    #delta_t = 0.01 #grande
+    #delta_t = 0.0001 #medio
+    delta_t = 1e-6 #pequeno
     t0 = 0
 
-    tmax = 0.1
+    tmax = 0.03
 
-    n_steps = int(tmax / delta_t)
+    n_steps = int(tmax / delta_t) #define numero de steps de integracao
 
     Y0 = np.array([
         0,
@@ -48,10 +51,13 @@ if __name__ == '__main__':
 
     edo = RK4(func=f, step=delta_t, x0=t0, y0=Y0)
 
+    #resolve sistema por RK4 com o numero de steps definido
     t_int, y_int = edo.solve(n_steps)
 
+    #calcula a derivada de [Y] por meio de [F]
     ydot_int = np.array([f(t_int[i], y_int[i, :]) for i in range(len(t_int))])
 
+    #define constantes para multiplicar cada uma das respostas
     plot_scalars = {
         'q': 1e5,
         'i_1': 1e2,
@@ -72,7 +78,7 @@ if __name__ == '__main__':
 
     plt.legend([f'${key} \cdot {value:.2e}$' for key, value in plot_scalars.items()])
 
-    top_limit = 150
+    top_limit = 50
     plt.ylim(top=top_limit, bottom=-top_limit)
 
     plt.title(f'Integração de {t0} a {tmax} com passo {delta_t:.2e}')

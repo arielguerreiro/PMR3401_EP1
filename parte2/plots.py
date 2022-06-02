@@ -4,8 +4,9 @@ import seaborn as sns
 import plotly.express as ex
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
+import pandas as pd
 
-def heatmap_2d(M, dr, dtheta, tipo='C'):
+def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C'):
 
     X = []
     Y = []
@@ -33,10 +34,34 @@ def heatmap_2d(M, dr, dtheta, tipo='C'):
     X, Y = np.array(X), np.array(Y)
     if tipo == 'D':
         Valores = [str(i) for i in Valores]
-    fig = ex.scatter(x=X, y=Y, color=Valores)
+
+    df = pd.DataFrame({xlabel: X, ylabel: Y, legend: Valores})
+    
+    fig = ex.scatter(df, x=X, y=Y, color=legend)
+
+    fig.update_layout(
+        title = dict(
+            text=title,
+            x=0.5,
+            xanchor='center',
+            yanchor='top',
+        ),
+
+        legend = dict(
+            yanchor='top',
+            y=1.02,
+        ),
+
+        font=dict(
+            family="Courier New",
+            size=18,
+        ),
+
+    )
+
     fig.show()
 
-def surf_3d(M, dr, dtheta):
+def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
 
     raios = [0.03 + i*dr for i in range(M.shape[0])]
     angulos = [j*dtheta for j in range(M.shape[1])]
@@ -47,9 +72,31 @@ def surf_3d(M, dr, dtheta):
     y_mesh = raio_mesh*np.sin(ang_mesh)
 
     fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh), go.Surface(z=M, x=x_mesh, y=-y_mesh)])
+    
+    fig.update_layout(
+       title = dict(
+            text=title,
+            x=0.5,
+            xanchor='center',
+        ),
+
+        scene = dict(
+            xaxis_title=xlabel,
+            yaxis_title=ylabel,
+            zaxis_title=zlabel, 
+        ),
+
+        font=dict(
+            family="Courier New",
+            size=18,
+        ), 
+    )
+    
     fig.show()
 
-def quiver(J, dr, dtheta):
+
+
+def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
 
     raios = [0.03 + i*dr for i in range(J.shape[0])]
     angulos = [j*dtheta for j in range(J.shape[1])]
@@ -73,10 +120,30 @@ def quiver(J, dr, dtheta):
             y_vec[i, j] = (qr + qtheta)*np.sin(angulo)
 
     fig1 = ff.create_quiver(x_mesh, y_mesh, x_vec, y_vec)
-    fig2 = ff.create_quiver(x_mesh, -y_mesh, x_vec, -y_vec)
 
-    fig1.add_traces(data = fig2.data)
-    fig1.update_traces(marker=dict(color='blue'))
+    if plot == 'full':
+        fig2 = ff.create_quiver(x_mesh, -y_mesh, x_vec, -y_vec)
+
+        fig1.add_traces(data = fig2.data)
+        fig1.update_traces(marker=dict(color='blue'))
+
+    fig.update_layout(
+       title = dict(
+            text=title,
+            x=0.5,
+            xanchor='center',
+        ),
+
+        scene = dict(
+            xaxis_title=xlabel,
+            yaxis_title=ylabel,
+        ),
+
+        font=dict(
+            family="Courier New",
+            size=18,
+        ), 
+    )
 
     fig1.show()
 
@@ -93,6 +160,5 @@ if __name__ == '__main__':
         for j in range(M.shape[1]):
             M[i, j] = define_condicao(i,j, dr, dtheta)
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    heatmap_2d(M, dr, dtheta, 'C')
+    heatmap_2d(M, dr, dtheta, title='Condicao dos pontos', xlabel='X (m)', ylabel='Y (m)', legend='Condicao')
+    surf_3d(M, dr, dtheta, title='Condicao dos pontos', xlabel='X (m)', ylabel='Y (m)', zlabel='Tensao (V)')
