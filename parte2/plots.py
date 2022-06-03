@@ -72,7 +72,7 @@ def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
     y_mesh = raio_mesh*np.sin(ang_mesh)
 
     fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh), go.Surface(z=M, x=x_mesh, y=-y_mesh)])
-    
+
     fig.update_layout(
        title = dict(
             text=title,
@@ -127,7 +127,7 @@ def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
         fig1.add_traces(data = fig2.data)
         fig1.update_traces(marker=dict(color='blue'))
 
-    fig.update_layout(
+    fig1.update_layout(
        title = dict(
             text=title,
             x=0.5,

@@ -5,6 +5,8 @@ from funcoes_potencial import *
 props_elet = {
     "sigma_A": 5e-6,
     "sigma_B": 1e-5,
+    "k_A": 110,
+    "k_B": 500
 }
 
 props_geo = {
@@ -84,7 +86,7 @@ def define_condicao(i, j, dr, dtheta):
             return 8
 
 
-def calcula_tensao(M, i, j, dr, dtheta):
+def calcula_tensao(M, i, j, dr, dtheta,qdot=0):
     '''
     Funcao que calcula a tensao para um ponto i, j
 
@@ -104,29 +106,29 @@ def calcula_tensao(M, i, j, dr, dtheta):
     condicao = define_condicao(i, j, dr, dtheta)
 
     if(condicao == 0):
-        temp = sup_A(M, i, j, dr, dtheta)
+        temp = sup_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 1):
-        temp = inf_B(M, i, j, dr, dtheta)
+        temp = inf_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 2):
-        temp = esq_B(M, i, j, dr, dtheta)
+        temp = esq_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 3):
-        temp = dir_B(M, i, j, dr, dtheta)
+        temp = dir_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 4):
-        temp = esq_A(M, i, j, dr, dtheta)
+        temp = esq_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 5):
-        temp = dir_A(M, i, j, dr, dtheta)
+        temp = dir_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 6):
-        temp = inf_A(M, i, j, dr, dtheta)
+        temp = inf_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 7):
-        temp = sup_B(M, i, j, dr, dtheta)
+        temp = sup_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 8):
-        temp = inter_A(M, i, j, dr, dtheta)
+        temp = inter_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 9):
-        temp = inter_B(M, i, j, dr, dtheta)
+        temp = inter_B(M, i, j, dr, dtheta, qdot)
     
-    return np.float(temp)
+    return temp
 
-def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
+def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,qdot=0):
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -198,7 +200,7 @@ def calcula_qponto(J_ans, dr, dtheta):
             else:
                 sigma = props_elet['sigma_B']
             
-            qdot[i, j] = -np.linalg.norm(J_ans[i, j, :])/sigma
+            qdot[i, j] = -(np.linalg.norm(J_ans[i, j, :]))**2/sigma
 
     return qdot
 
@@ -207,7 +209,7 @@ def calcula_corrente(J_ans, dr, dtheta):
     soma = 0
 
     for i in range(J_ans.shape[0]): #caminha em r
-        #somente a componente de r do vetor eh relevante
+        #somente a componente de r do vetor seria seria relevante
         soma += J_ans[i, 0, 0]
 
     return soma

@@ -4,10 +4,10 @@ import numpy as np
 
 print("PMR3401 - EP1 2022")
 print("Ariel Guerreiro - 11257838")
-print("Felipe Azank - XXXXXX\n\n")
+print("Felipe Azank - 11258137\n\n")
 
 #calcula a tensao de cada ponto da malha
-dr = 0.0005
+dr = 0.005
 dtheta = np.deg2rad(0.5)
 
 print(f"Discretização adotada:\ndelta_r = {dr}\ndelta_theta = {dtheta:.5f} rad ({np.rad2deg(dtheta)}°)")
@@ -65,10 +65,8 @@ quiver(
 #surface plot da fonte de calor equivalente
 surf_3d(
     q_ans, dr, dtheta,
-    surf_3d(
-    V_ans, dr, dtheta,
-    title='Tensão elétrica',
+    title='Fonte de calor equivalente',
     xlabel='Coordenada X (m)',
     ylabel='Coordenada Y (m)',
     zlabel='Fonte de calor (W/m^3)',
-))
+)
