@@ -216,8 +216,9 @@ def calcula_corrente(J_ans, dr, dtheta):
     soma = 0
 
     for i in range(J_ans.shape[0]): #caminha em r
-        #somente a componente de r do vetor seria seria relevante
-        soma += J_ans[i, 0, 0]
+        for j in range(J_ans.shape[1]):
+            #somente a componente de r do vetor seria seria relevante
+            soma += J_ans[i, j, 0]*dr  
 
     return soma
 

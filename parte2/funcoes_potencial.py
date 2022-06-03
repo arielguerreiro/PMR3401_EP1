@@ -59,7 +59,7 @@ def inf_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #2: borda esquerda de B
 def esq_B(M, i, j, dr, dtheta,qdot):
@@ -91,7 +91,7 @@ def esq_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #3: borda direita de B
 def dir_B(M, i, j, dr, dtheta,qdot):
@@ -123,7 +123,7 @@ def dir_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #4: borda esquerda de A
 def esq_A(M, i, j, dr, dtheta,qdot):
@@ -178,7 +178,7 @@ def sup_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #8: interior de A
 def inter_A(M, i, j, dr, dtheta,qdot):
@@ -213,7 +213,7 @@ def inter_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 
 if __name__ == '__main__':
