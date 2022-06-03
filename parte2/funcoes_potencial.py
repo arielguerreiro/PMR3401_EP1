@@ -39,7 +39,8 @@ def sup_A(M, i, j, dr, dtheta, qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1]]).reshape(3,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #1: borda inferior de B (regiao de simetria)
 def inf_B(M, i, j, dr, dtheta,qdot):
@@ -58,18 +59,27 @@ def inf_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #2: borda esquerda de B
 def esq_B(M, i, j, dr, dtheta,qdot):
     raio = 0.03 + i*dr
     angulo = j*dtheta #em radianos
 
-    sigmaA = props_elet['sigma_A']
-    sigmaB = props_elet['sigma_B']
+    if qdot==0:
+        sigmaA = props_elet['sigma_A']
+        sigmaB = props_elet['sigma_B']
 
-    alpha = sigmaA * (-2/dr + 1/raio)
-    beta = sigmaB * (2/dr + 1/raio)
+        alpha = sigmaA * (-2/dr + 1/raio)
+        beta = sigmaB * (2/dr + 1/raio)
+
+    else:
+        k_A = props_elet['k_A']
+        k_B = props_elet['k_B']
+
+        alpha = k_A * (-2/dr + 1/raio)
+        beta = k_B * (2/dr + 1/raio)
+        
 
     coefs = np.array([
         2*(alpha - beta)*(raio**2 * dtheta**2 + dr **2),
@@ -81,18 +91,27 @@ def esq_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #3: borda direita de B
 def dir_B(M, i, j, dr, dtheta,qdot):
     raio = 0.03 + i*dr
     angulo = j*dtheta #em radianos
 
-    sigmaA = props_elet['sigma_A']
-    sigmaB = props_elet['sigma_B']
+    if qdot==0:
+        sigmaA = props_elet['sigma_A']
+        sigmaB = props_elet['sigma_B']
 
-    alpha = sigmaB*(-2/dr + 1/raio)
-    beta = sigmaA*(2/dr + 1/raio)
+        alpha = sigmaB*(-2/dr + 1/raio)
+        beta = sigmaA*(2/dr + 1/raio)
+
+    else:
+        k_A = props_elet['k_A']
+        k_B = props_elet['k_B']
+
+        alpha = k_A*(-2/dr + 1/raio)
+        beta = k_B*(2/dr + 1/raio)
+
 
     coefs = np.array([
         2*(alpha - beta)*(raio**2 * dtheta**2 + dr **2),
@@ -104,15 +123,22 @@ def dir_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #4: borda esquerda de A
 def esq_A(M, i, j, dr, dtheta,qdot):
-    return 100 + qdot
+    if qdot==0:
+        return 100
+    else:
+        return 30
+
 
 #5: borda direita de A
 def dir_A(M, i, j, dr, dtheta,qdot):
-    return 0 + qdot
+    if qdot==0:
+        return 0
+    else:
+        return 25
 
 #6: borda inferior de A (regiao de simetria)
 def inf_A(M, i, j, dr, dtheta,qdot):
@@ -128,27 +154,31 @@ def inf_A(M, i, j, dr, dtheta,qdot):
     ])
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #7: borda superior de B
 def sup_B(M, i, j, dr, dtheta,qdot):
     raio = 0.03 + i*dr
     angulo = j*dtheta #em radianos
 
-    sigmaA = props_elet['sigma_A']
-    sigmaB = props_elet['sigma_B']
+    if qdot==0:
+        A = props_elet['sigma_A']
+        B = props_elet['sigma_B']
+    else:
+        A = props_elet['k_A']
+        B = props_elet['k_B']
 
     coefs = np.array([
-        4*(sigmaA + sigmaB)*(dtheta**2 * raio**2 + dr**2),
-        (sigmaA + sigmaB)*(-dtheta**2 * dr * raio + 2 * dtheta**2 * raio**2),
-        (sigmaA + sigmaB)*(dtheta**2 * dr * raio + 2 * dtheta**2 * raio**2),
-        4 * dr**2 * sigmaA,
-        4 * dr**2 * sigmaB, 
+        4*(A + B)*(dtheta**2 * raio**2 + dr**2),
+        (A + B)*(-dtheta**2 * dr * raio + 2 * dtheta**2 * raio**2),
+        (A + B)*(dtheta**2 * dr * raio + 2 * dtheta**2 * raio**2),
+        4 * dr**2 * A,
+        4 * dr**2 * B, 
     ])
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 #8: interior de A
 def inter_A(M, i, j, dr, dtheta,qdot):
@@ -165,7 +195,7 @@ def inter_A(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 
 #9: interior de B
@@ -183,7 +213,7 @@ def inter_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return np.float((coefs[1:] @ pontos)/coefs[0])+qdot
+    return (np.float(coefs[1:] @ pontos)+qdot)/np.float(coefs[0])
 
 
 if __name__ == '__main__':
