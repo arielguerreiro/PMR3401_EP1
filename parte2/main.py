@@ -8,7 +8,7 @@ print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
 
 #calcula a tensao de cada ponto da malha
-dr = 0.001
+dr = 0.005
 dtheta = np.deg2rad(1)
 
 print(f"Discretização adotada:\ndelta_r = {dr}\ndelta_theta = {dtheta:.5f} rad ({np.rad2deg(dtheta)}°)")
