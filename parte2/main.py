@@ -70,3 +70,19 @@ surf_3d(
     ylabel='Coordenada Y (m)',
     zlabel='Fonte de calor (W/m^3)',
 )
+
+#calcula temperaturas com as mesmas funcoes do potencial
+T_ans = resolve_potencial(
+    dr=dr,
+    dtheta=dtheta,
+    lamb=1.75,
+    erro_des=1e-4,
+    q_dots = q_ans)
+
+surf_3d(
+    T_ans, dr, dtheta,
+    title='Temperatura do Sexo',
+    xlabel='Coordenada X (m)',
+    ylabel='Coordenada Y (m)',
+    zlabel='Temperatura (Celsius)'
+)

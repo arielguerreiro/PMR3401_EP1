@@ -86,7 +86,7 @@ def define_condicao(i, j, dr, dtheta):
             return 8
 
 
-def calcula_tensao(M, i, j, dr, dtheta,qdot=0):
+def calcula_tensao(M, i, j, dr, dtheta,q_dots):
     '''
     Funcao que calcula a tensao para um ponto i, j
 
@@ -103,6 +103,11 @@ def calcula_tensao(M, i, j, dr, dtheta,qdot=0):
     - 9: interior de B
     '''
 
+    if q_dots is None: 
+        qdot = 0 
+    else:
+        qdot = q_dots[i,j]
+    
     condicao = define_condicao(i, j, dr, dtheta)
 
     if(condicao == 0):
@@ -128,7 +133,7 @@ def calcula_tensao(M, i, j, dr, dtheta,qdot=0):
     
     return temp
 
-def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,qdot=0):
+def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q_dots=None):
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -141,7 +146,9 @@ def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q
                     erro_des=erro_des, 
                     dr=dr, 
                     dtheta=dtheta,
-                    max_steps=1.e4)
+                    q_dots=q_dots,
+                    max_steps=1.e4
+                    )
 
     #cria_plot(M_ans, dr, dtheta)
     return M_ans
