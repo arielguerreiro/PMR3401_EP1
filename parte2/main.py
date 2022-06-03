@@ -1,24 +1,29 @@
 from resolve_potencial import *
 from plots import *
 import numpy as np
+import time
 
 print("PMR3401 - EP1 2022")
 print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
 
 #calcula a tensao de cada ponto da malha
-dr = 0.005
-dtheta = np.deg2rad(0.5)
+dr = 0.001
+dtheta = np.deg2rad(1)
 
 print(f"Discretização adotada:\ndelta_r = {dr}\ndelta_theta = {dtheta:.5f} rad ({np.rad2deg(dtheta)}°)")
 
 #calculo das tensoes
+start_time = time.time()
+
 V_ans = resolve_potencial(
     dr=dr,
     dtheta=dtheta,
     lamb=1.75,
     erro_des=1e-4
     )
+
+#print(f"Tempo de execução: {(time.time() - start_time):.2f} s")
 
 J_ans = calcula_J(V_ans, dr, dtheta)
 
