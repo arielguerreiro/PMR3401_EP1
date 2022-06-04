@@ -97,7 +97,7 @@ def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
 
 
 
-def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
+def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half', arrow_scale=1):
 
     raios = [0.03 + i*dr for i in range(J.shape[0])]
     angulos = [j*dtheta for j in range(J.shape[1])]
@@ -120,10 +120,10 @@ def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
             x_vec[i, j] = (qr - qtheta)*np.cos(angulo)
             y_vec[i, j] = (qr + qtheta)*np.sin(angulo)
 
-    fig1 = ff.create_quiver(x_mesh, y_mesh, x_vec, y_vec)
+    fig1 = ff.create_quiver(x_mesh, y_mesh, x_vec, y_vec, arrow_scale=arrow_scale)
 
     if plot == 'full':
-        fig2 = ff.create_quiver(x_mesh, -y_mesh, x_vec, -y_vec)
+        fig2 = ff.create_quiver(x_mesh, -y_mesh, x_vec, -y_vec, arrow_scale=arrow_scale)
 
         fig1.add_traces(data = fig2.data)
         fig1.update_traces(marker=dict(color='blue'))

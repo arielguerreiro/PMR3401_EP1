@@ -2,12 +2,12 @@ import numpy as np
 from liebmann import *
 from funcoes_potencial import *
 
-props_elet = {
-    "sigma_A": 5e-6,
-    "sigma_B": 1e-5,
-    "k_A": 110,
-    "k_B": 500
-}
+# props_elet = {
+#     "sigma_A": 5e-6,
+#     "sigma_B": 1e-5,
+#     "k_A": 110,
+#     "k_B": 500
+# }
 
 props_geo = {
     "R_A" : [0.03, 0.08 + 0.03],
