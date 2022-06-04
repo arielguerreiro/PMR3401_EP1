@@ -5,6 +5,8 @@ from funcoes_potencial import *
 props_elet = {
     "sigma_A": 5e-6,
     "sigma_B": 1e-5,
+    "k_A": 110,
+    "k_B": 500
 }
 
 props_geo = {
@@ -84,7 +86,7 @@ def define_condicao(i, j, dr, dtheta):
             return 8
 
 
-def calcula_tensao(M, i, j, dr, dtheta):
+def calcula_tensao(M, i, j, dr, dtheta,q_dots):
     '''
     Funcao que calcula a tensao para um ponto i, j
 
@@ -101,32 +103,37 @@ def calcula_tensao(M, i, j, dr, dtheta):
     - 9: interior de B
     '''
 
+    if q_dots is None: 
+        qdot = 0 
+    else:
+        qdot = q_dots[i,j]
+    
     condicao = define_condicao(i, j, dr, dtheta)
 
     if(condicao == 0):
-        temp = sup_A(M, i, j, dr, dtheta)
+        temp = sup_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 1):
-        temp = inf_B(M, i, j, dr, dtheta)
+        temp = inf_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 2):
-        temp = esq_B(M, i, j, dr, dtheta)
+        temp = esq_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 3):
-        temp = dir_B(M, i, j, dr, dtheta)
+        temp = dir_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 4):
-        temp = esq_A(M, i, j, dr, dtheta)
+        temp = esq_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 5):
-        temp = dir_A(M, i, j, dr, dtheta)
+        temp = dir_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 6):
-        temp = inf_A(M, i, j, dr, dtheta)
+        temp = inf_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 7):
-        temp = sup_B(M, i, j, dr, dtheta)
+        temp = sup_B(M, i, j, dr, dtheta, qdot)
     elif(condicao == 8):
-        temp = inter_A(M, i, j, dr, dtheta)
+        temp = inter_A(M, i, j, dr, dtheta, qdot)
     elif(condicao == 9):
-        temp = inter_B(M, i, j, dr, dtheta)
+        temp = inter_B(M, i, j, dr, dtheta, qdot)
     
-    return np.float(temp)
+    return temp
 
-def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
+def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q_dots=None):
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -139,50 +146,67 @@ def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4):
                     erro_des=erro_des, 
                     dr=dr, 
                     dtheta=dtheta,
-                    max_steps=1.e4)
+                    q_dots=q_dots,
+                    max_steps=1.e4
+                    )
 
     #cria_plot(M_ans, dr, dtheta)
     return M_ans
 
-def calcula_Qr(V, i, j, dr, dtheta):
+def calcula_Qr(V, i, j, dr, dtheta, termico=False):
     condicao = define_condicao(i, j, dr, dtheta)
 
+    if termico:
+        multA = props_elet['k_A']
+        multB = props_elet['k_B']
+    else: 
+        multA = props_elet['sigma_A']
+        multB = props_elet['sigma_B']
+    
     if(condicao == 4): #borda esquerda de A
         #progressiva
-        qr = props_elet['sigma_A'] * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
+        qr = multA * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
     elif(condicao == 5): #borda direita de A
         #regressiva
-        qr = props_elet['sigma_A'] * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
+        qr = multA * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
     elif(condicao in [0, 8, 6]): #interior de A
-        qr = props_elet['sigma_A']* (V[i+1, j] - V[i-1,j])/(2*dr)
+        qr = multA * (V[i+1, j] - V[i-1,j])/(2*dr)
     else: #interior de B 
-        qr = props_elet['sigma_B']* (V[i+1, j] - V[i-1,j])/(2*dr)
+        qr = multB * (V[i+1, j] - V[i-1,j])/(2*dr)
 
     return qr
 
-def calcula_Qtheta(V, i, j, dr, dtheta):
+def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
     condicao = define_condicao(i, j, dr, dtheta)
 
+    if termico:
+        multA = props_elet['k_A']
+        multB = props_elet['k_B']
+    else: 
+        multA = props_elet['sigma_A']
+        multB = props_elet['sigma_B']
+        
+
     if(condicao == 0): #regressiva
-        qtheta = props_elet['sigma_A'] * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
+        qtheta = multA * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
     elif(condicao in [6, 1]): #central simetrica A
         qtheta = 0
     elif(condicao in [4, 5, 8]): #central A
         try:
-            qtheta = props_elet['sigma_A']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+            qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
         except:
             qtheta = 0 #despreza pontos extremos de A
     else: #central B
-        qtheta = props_elet['sigma_B']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
 
     return qtheta
 
-def calcula_J(V_ans, dr, dtheta):
+def calcula_J(V_ans, dr, dtheta, termico=False):
     J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
     for i in range(J.shape[0]):
         for j in range(J.shape[1]):
-            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta)
-            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta)
+            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta, termico)
+            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta, termico)
 
     return J
 
@@ -198,7 +222,7 @@ def calcula_qponto(J_ans, dr, dtheta):
             else:
                 sigma = props_elet['sigma_B']
             
-            qdot[i, j] = -np.linalg.norm(J_ans[i, j, :])/sigma
+            qdot[i, j] = -(np.linalg.norm(J_ans[i, j, :]))**2/sigma
 
     return qdot
 
@@ -207,8 +231,9 @@ def calcula_corrente(J_ans, dr, dtheta):
     soma = 0
 
     for i in range(J_ans.shape[0]): #caminha em r
-        #somente a componente de r do vetor eh relevante
-        soma += J_ans[i, 0, 0]
+        for j in range(J_ans.shape[1]):
+            #somente a componente de r do vetor seria seria relevante
+            soma += J_ans[i, j, 0]*dr  
 
     return soma
 

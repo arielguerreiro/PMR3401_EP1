@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 import pandas as pd
 
-def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C'):
+def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C', reflexao=True):
 
     X = []
     Y = []
@@ -27,9 +27,10 @@ def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C'):
             Valores.append(valor)
             
             #reflexao no eixo X
-            X.append(x)
-            Y.append(-y)
-            Valores.append(valor)
+            if reflexao:
+                X.append(x)
+                Y.append(-y)
+                Valores.append(valor)
 
     X, Y = np.array(X), np.array(Y)
     if tipo == 'D':
@@ -72,7 +73,7 @@ def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
     y_mesh = raio_mesh*np.sin(ang_mesh)
 
     fig = go.Figure(data=[go.Surface(z=M, x=x_mesh, y=y_mesh), go.Surface(z=M, x=x_mesh, y=-y_mesh)])
-    
+
     fig.update_layout(
        title = dict(
             text=title,
@@ -127,7 +128,7 @@ def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
         fig1.add_traces(data = fig2.data)
         fig1.update_traces(marker=dict(color='blue'))
 
-    fig.update_layout(
+    fig1.update_layout(
        title = dict(
             text=title,
             x=0.5,
@@ -151,8 +152,8 @@ def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half'):
 if __name__ == '__main__':
     from resolve_potencial import define_condicao, cria_malha
 
-    dr = 0.0005
-    dtheta = np.deg2rad(0.5)
+    dr = 0.001
+    dtheta = np.deg2rad(1)
     M = cria_malha(dr, dtheta)
     print(M.shape)
 
@@ -160,5 +161,5 @@ if __name__ == '__main__':
         for j in range(M.shape[1]):
             M[i, j] = define_condicao(i,j, dr, dtheta)
 
-    heatmap_2d(M, dr, dtheta, title='Condicao dos pontos', xlabel='X (m)', ylabel='Y (m)', legend='Condicao')
-    surf_3d(M, dr, dtheta, title='Condicao dos pontos', xlabel='X (m)', ylabel='Y (m)', zlabel='Tensao (V)')
+    heatmap_2d(M, dr, dtheta, title='Condição dos pontos', xlabel='X (m)', ylabel='Y (m)', legend='Condicão', tipo='D', reflexao=False)
+    #surf_3d(M, dr, dtheta, title='Condicao dos pontos', xlabel='X (m)', ylabel='Y (m)', zlabel='Tensao (V)')
