@@ -6,7 +6,7 @@ import time
 print("PMR3401 - EP1 2022")
 print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
-
+    
 #calcula a tensao de cada ponto da malha
 dr = 0.005
 dtheta = np.deg2rad(1)
@@ -86,8 +86,8 @@ T_ans = resolve_potencial(
 
 surf_3d(
     T_ans, dr, dtheta,
-    title='Temperatura do Sexo',
+    title='Temperatura dos Pontos do Forno',
     xlabel='Coordenada X (m)',
     ylabel='Coordenada Y (m)',
-    zlabel='Temperatura (Celsius)'
+    zlabel='Temperatura (K)'
 )

@@ -1,8 +1,8 @@
 import numpy as np
 
 props_elet = {
-    "sigma_A": 5e-6,
-    "sigma_B": 1e-5,
+    "sigma_A": 5e-6*100000,
+    "sigma_B": 1e-5*100000,
     "k_A": 110,
     "k_B": 500
 }
@@ -39,7 +39,6 @@ def sup_A(M, i, j, dr, dtheta, qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1]]).reshape(3,1)
 
-    
     return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #1: borda inferior de B (regiao de simetria)
@@ -58,7 +57,7 @@ def inf_B(M, i, j, dr, dtheta,qdot):
     ])
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
-
+   
     return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #2: borda esquerda de B
@@ -130,7 +129,7 @@ def esq_A(M, i, j, dr, dtheta,qdot):
     if qdot==0:
         return 100
     else:
-        return 30
+        return 30 + 273
 
 
 #5: borda direita de A
@@ -138,7 +137,7 @@ def dir_A(M, i, j, dr, dtheta,qdot):
     if qdot==0:
         return 0
     else:
-        return 25
+        return 25 + 273
 
 #6: borda inferior de A (regiao de simetria)
 def inf_A(M, i, j, dr, dtheta,qdot):
@@ -153,7 +152,7 @@ def inf_A(M, i, j, dr, dtheta,qdot):
         2*dr**2,
     ])
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j+1], M[i,j+1]]).reshape(4,1)
-
+ 
     return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #7: borda superior de B
@@ -177,7 +176,7 @@ def sup_B(M, i, j, dr, dtheta,qdot):
     ])
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
-
+  
     return (np.float(coefs[1:] @ pontos)-qdot*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 #8: interior de A
@@ -194,7 +193,7 @@ def inter_A(M, i, j, dr, dtheta,qdot):
     ])
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
-
+ 
     return (np.float(coefs[1:] @ pontos)-qdot*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 
