@@ -197,7 +197,7 @@ def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
         except:
             qtheta = 0 #despreza pontos extremos de A
     else: #central B
-        qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        qtheta = multB* (V[i, j+1] - V[i,j-1])/(2*dtheta)
 
     return qtheta
 
