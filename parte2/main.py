@@ -68,7 +68,6 @@ quiver(
     arrow_scale=1e-5,
 )
 
-import pdb; pdb.set_trace()
 
 #surface plot da fonte de calor equivalente
 surf_3d(
