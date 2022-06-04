@@ -91,3 +91,14 @@ surf_3d(
     ylabel='Coordenada Y (m)',
     zlabel='Temperatura (K)'
 )
+
+#calculo do fluxo de calor
+
+fluxo_ans = calcula_J(T_ans, dr, dtheta, termico=True)
+
+quiver(
+    fluxo_ans, dr, dtheta,
+    title='Vetor fluxo de calor (W/m^2)',
+    xlabel='Coordenada X (m)',
+    ylabel='Coordenada Y (m)',
+)

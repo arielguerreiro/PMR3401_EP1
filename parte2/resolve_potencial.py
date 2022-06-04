@@ -3,8 +3,8 @@ from liebmann import *
 from funcoes_potencial import *
 
 props_elet = {
-    "sigma_A": 5e-6*100000,
-    "sigma_B": 1e-5*100000,
+    "sigma_A": 5e-6,
+    "sigma_B": 1e-5,
     "k_A": 110,
     "k_B": 500
 }
@@ -153,45 +153,60 @@ def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q
     #cria_plot(M_ans, dr, dtheta)
     return M_ans
 
-def calcula_Qr(V, i, j, dr, dtheta):
+def calcula_Qr(V, i, j, dr, dtheta, termico=False):
     condicao = define_condicao(i, j, dr, dtheta)
 
+    if termico:
+        multA = props_elet['k_A']
+        multB = props_elet['k_B']
+    else: 
+        multA = props_elet['sigma_A']
+        multB = props_elet['sigma_B']
+    
     if(condicao == 4): #borda esquerda de A
         #progressiva
-        qr = props_elet['sigma_A'] * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
+        qr = multA * (-V[i+2, j] + 4*V[i+1, j] - 3*V[i, j])/(2*dr)    
     elif(condicao == 5): #borda direita de A
         #regressiva
-        qr = props_elet['sigma_A'] * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
+        qr = multA * (V[i-2, j] - 4*V[i-1, j] + 3*V[i, j])/(2*dr)
     elif(condicao in [0, 8, 6]): #interior de A
-        qr = props_elet['sigma_A']* (V[i+1, j] - V[i-1,j])/(2*dr)
+        qr = multA * (V[i+1, j] - V[i-1,j])/(2*dr)
     else: #interior de B 
-        qr = props_elet['sigma_B']* (V[i+1, j] - V[i-1,j])/(2*dr)
+        qr = multB * (V[i+1, j] - V[i-1,j])/(2*dr)
 
     return qr
 
-def calcula_Qtheta(V, i, j, dr, dtheta):
+def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
     condicao = define_condicao(i, j, dr, dtheta)
 
+    if termico:
+        multA = props_elet['k_A']
+        multB = props_elet['k_B']
+    else: 
+        multA = props_elet['sigma_A']
+        multB = props_elet['sigma_B']
+        
+
     if(condicao == 0): #regressiva
-        qtheta = props_elet['sigma_A'] * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
+        qtheta = multA * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
     elif(condicao in [6, 1]): #central simetrica A
         qtheta = 0
     elif(condicao in [4, 5, 8]): #central A
         try:
-            qtheta = props_elet['sigma_A']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+            qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
         except:
             qtheta = 0 #despreza pontos extremos de A
     else: #central B
-        qtheta = props_elet['sigma_B']* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
 
     return qtheta
 
-def calcula_J(V_ans, dr, dtheta):
+def calcula_J(V_ans, dr, dtheta, termico=False):
     J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
     for i in range(J.shape[0]):
         for j in range(J.shape[1]):
-            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta)
-            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta)
+            J[i, j, 0] = -calcula_Qr(V_ans, i, j, dr, dtheta, termico)
+            J[i, j, 1] = -calcula_Qtheta(V_ans, i, j, dr, dtheta, termico)
 
     return J
 
