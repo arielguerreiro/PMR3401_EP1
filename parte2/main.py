@@ -30,7 +30,9 @@ J_ans = calcula_J(V_ans, dr, dtheta)
 q_ans = calcula_qponto(J_ans, dr, dtheta)
 
 #calcula metade da corrente - lembrar de dobrar aqui
-I_ans = 2*calcula_corrente(J_ans, dtheta)
+
+raio = min(props_geo['R_A']) #0,03
+I_ans = 2*calcula_corrente(J_ans, raio, dtheta)
 
 deltaV = 100
 
@@ -40,6 +42,7 @@ print(f"Corrente: {I_ans} A")
 print(f"Resistência equivalente: {R} Ohms")
 print(f"Potência dissipada: {I_ans**2 * R}")
 
+import pdb;pdb.set_trace()
 #plots
 
 #heatmap da tensao eletrica
