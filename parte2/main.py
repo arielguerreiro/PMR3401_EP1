@@ -30,7 +30,7 @@ J_ans = calcula_J(V_ans, dr, dtheta)
 q_ans = calcula_qponto(J_ans, dr, dtheta)
 
 #calcula metade da corrente - lembrar de dobrar aqui
-I_ans = calcula_corrente(J_ans, dr, dtheta)
+I_ans = 2*calcula_corrente(J_ans, dtheta)
 
 deltaV = 100
 
@@ -38,6 +38,7 @@ R = deltaV/I_ans
 
 print(f"Corrente: {I_ans} A")
 print(f"Resistência equivalente: {R} Ohms")
+print(f"Potência dissipada: {I_ans**2 * R}")
 
 #plots
 

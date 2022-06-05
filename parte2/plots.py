@@ -1,3 +1,4 @@
+from matplotlib.axis import XAxis
 import matplotlib.pyplot as plt 
 import numpy as np 
 import seaborn as sns
@@ -47,6 +48,10 @@ def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C', reflexao=
             xanchor='center',
             yanchor='top',
         ),
+
+        xaxis_title = xlabel, 
+
+        yaxis_title = ylabel,
 
         legend = dict(
             yanchor='top',
