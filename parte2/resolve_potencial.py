@@ -171,6 +171,7 @@ def calcula_Qr(V, i, j, dr, dtheta, termico=False):
 
 def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
     condicao = define_condicao(i, j, dr, dtheta)
+    raio = 0.03 + i*dr
 
     if termico:
         multA = props_elet['k_A']
@@ -181,16 +182,16 @@ def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
         
 
     if(condicao == 0): #regressiva
-        qtheta = multA * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta)
+        qtheta = multA * (V[i, j-2] - 4*V[i, j-1] + 3*V[i, j])/(2*dtheta*raio)
     elif(condicao in [6, 1]): #central simetrica A
         qtheta = 0
     elif(condicao in [4, 5, 8]): #central A
         try:
-            qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+            qtheta = multA* (V[i, j+1] - V[i,j-1])/(2*dtheta*raio)
         except:
             qtheta = 0 #despreza pontos extremos de A
     else: #central B
-        qtheta = multB* (V[i, j+1] - V[i,j-1])/(2*dtheta)
+        qtheta = multB* (V[i, j+1] - V[i,j-1])/(2*dtheta*raio)
 
     return qtheta
 
