@@ -1,10 +1,11 @@
 import numpy as np
 
 props_elet = {
-    "sigma_A": 5e-6 *1e6,
-    "sigma_B": 1e-5 * 1e6,
+    "sigma_A": 5e-6*1e6,
+    "sigma_B": 1e-5*1e6,
     "k_A": 110,
-    "k_B": 500
+    "k_B": 500,
+    "h": 50 
 }
 
 """
@@ -91,8 +92,7 @@ def esq_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    #VARZEA
-    return (np.float(coefs[1:] @ pontos)-(qdot/(k_B-k_A))*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)/np.float(coefs[0]))
 
 #3: borda direita de B
 def dir_B(M, i, j, dr, dtheta,qdot):
@@ -126,7 +126,7 @@ def dir_B(M, i, j, dr, dtheta,qdot):
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
     #VARZEA
-    return (np.float(coefs[1:] @ pontos)-(qdot/(k_B-k_A))*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return np.float(coefs[1:] @ pontos)/np.float(coefs[0])
 
 #4: borda esquerda de A
 def esq_A(M, i, j, dr, dtheta,qdot):
@@ -141,7 +141,32 @@ def dir_A(M, i, j, dr, dtheta,qdot):
     if qdot==0:
         return 0
     else:
-        return 25 + 273
+        T_amb = 25
+        k_A = props_elet['k_A']
+        h = props_elet['h']
+        raio = 0.03 + i*dr
+
+        coefs = np.array([
+            (dr**2 * dtheta**2 * h*raio) + 2* dr**2 * k_A + 2* dr* dtheta**2 * h * raio**2 
+            + 2* dtheta**2 * k_A * raio**2,
+            2* dtheta**2 * k_A * raio**2,
+            dr**2 * k_A,
+            dr**2 * k_A,
+        ])
+
+        try:
+            pontos = np.array([M[i-1,j], M[i,j-1], M[i,j+1]]).reshape(3,1)
+
+            temp = np.float(coefs[1:] @ pontos)
+
+            temp += T_amb*(dr**2 * dtheta**2 * h * raio + 2* dr * dtheta**2 * h * raio**2)
+            temp += qdot * dr**2 * dtheta**2 * raio**2 
+
+        except: 
+            return M[i,j-1]
+
+        return temp/np.float(coefs[0]) 
+        
 
 #6: borda inferior de A (regiao de simetria)
 def inf_A(M, i, j, dr, dtheta,qdot):
@@ -180,8 +205,8 @@ def sup_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
     
-    #VARZEA
-    return (np.float(coefs[1:] @ pontos)-(qdot/(A+B))*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+
+    return np.float(coefs[1:] @ pontos)/np.float(coefs[0])
 
 #8: interior de A
 def inter_A(M, i, j, dr, dtheta,qdot):
@@ -216,7 +241,7 @@ def inter_B(M, i, j, dr, dtheta,qdot):
 
     pontos = np.array([M[i-1,j], M[i+1,j], M[i,j-1], M[i,j+1]]).reshape(4,1)
 
-    return (np.float(coefs[1:] @ pontos)-(qdot/k_B)*4*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
+    return (np.float(coefs[1:] @ pontos)-(qdot/k_B)*2*(dr**2 * dtheta**2 * raio**2))/np.float(coefs[0])
 
 
 if __name__ == '__main__':

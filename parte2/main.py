@@ -31,18 +31,43 @@ q_ans = calcula_qponto(J_ans, dr, dtheta)
 
 #calcula metade da corrente - lembrar de dobrar aqui
 
-raio = min(props_geo['R_A']) #0,03
-I_ans = 2*calcula_corrente(J_ans, raio, dtheta)
+I_ans_rmax = 2*calcula_corrente(J_ans, dtheta, rmax=True)
+
+deltaV = 100
+
+R = deltaV/I_ans_rmax
+
+print(f"Corrente calculada para Rmax = 0.11: {I_ans_rmax} A")
+print(f"Resistência equivalente: {R} Ohms")
+print(f"Potência dissipada MAX: {I_ans_rmax**2 * R}")
+
+I_ans = 2*calcula_corrente(J_ans, dtheta, rmax=False)
 
 deltaV = 100
 
 R = deltaV/I_ans
 
-print(f"Corrente: {I_ans} A")
+print(f"Corrente calculada para Rmin = 0.03: {I_ans} A")
 print(f"Resistência equivalente: {R} Ohms")
 print(f"Potência dissipada: {I_ans**2 * R}")
 
-import pdb;pdb.set_trace()
+#calcula temperaturas com as mesmas funcoes do potencial
+T_ans = resolve_potencial(
+    dr=dr,
+    dtheta=dtheta,
+    lamb=1.75,
+    erro_des=1e-4,
+    q_dots = q_ans)
+
+#calculo do fluxo de calor
+
+fluxo_ans = calcula_J(T_ans, dr, dtheta, termico=True)
+
+#calculo da quantidade de calor (unidade W) que flui pela parede de convecção:
+
+qt_calor_ans = 2*calcula_corrente(fluxo_ans, dtheta, rmax=True)
+print(f"Quantidade de calor que flui pela parede de convecção: {qt_calor_ans} W")
+
 #plots
 
 #heatmap da tensao eletrica
@@ -63,14 +88,6 @@ surf_3d(
     zlabel='Tensão (V)'
 )
 
-#quiver plot da densidade de corrente
-quiver(
-    J_ans, dr, dtheta,
-    title='Vetor densidade de corrente',
-    xlabel='Coordenada X (m)',
-    ylabel='Coordenada Y (m)',
-    arrow_scale=1e-5,
-)
 
 
 #surface plot da fonte de calor equivalente
@@ -82,14 +99,6 @@ surf_3d(
     zlabel='Fonte de calor (W/m^3)',
 )
 
-#calcula temperaturas com as mesmas funcoes do potencial
-T_ans = resolve_potencial(
-    dr=dr,
-    dtheta=dtheta,
-    lamb=1.75,
-    erro_des=1e-4,
-    q_dots = q_ans)
-
 surf_3d(
     T_ans, dr, dtheta,
     title='Temperatura dos Pontos do Forno',
@@ -98,10 +107,16 @@ surf_3d(
     zlabel='Temperatura (K)'
 )
 
-#calculo do fluxo de calor
+#quiver plot da densidade de corrente
+quiver(
+    J_ans, dr, dtheta,
+    title='Vetor densidade de corrente',
+    xlabel='Coordenada X (m)',
+    ylabel='Coordenada Y (m)',
+    arrow_scale=1e-5,
+)
 
-fluxo_ans = calcula_J(T_ans, dr, dtheta, termico=True)
-
+#quiver plot do vetor fluxo de calor
 quiver(
     fluxo_ans, dr, dtheta,
     title='Vetor fluxo de calor (W/m^2)',

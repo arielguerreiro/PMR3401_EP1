@@ -220,12 +220,17 @@ def calcula_qponto(J_ans, dr, dtheta):
 
     return qdot
 
-def calcula_corrente(J_ans, raio, dtheta):
+def calcula_corrente(J_ans, dtheta, rmax=False):
     #aproxima integral para soma
     soma = 0
-
-    for j in range(1,J_ans.shape[1]):
-        soma += J_ans[0,j,0] + J_ans[0,j-1,0]
+    if rmax:
+        raio = 0.11
+        for j in range(1,J_ans.shape[1]): 
+            soma += J_ans[-1,j,0] + J_ans[-1,j-1,0] #verificar o -1
+    else: 
+        raio = 0.03
+        for j in range(1,J_ans.shape[1]): 
+            soma += J_ans[0,j,0] + J_ans[0,j-1,0]
 
     return soma*2*raio*dtheta/2
 
