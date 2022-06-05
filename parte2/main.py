@@ -8,7 +8,7 @@ print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
     
 #calcula a tensao de cada ponto da malha
-dr = 0.005
+dr = 0.001
 dtheta = np.deg2rad(1)
 
 print(f"Discretização adotada:\ndelta_r = {dr}\ndelta_theta = {dtheta:.5f} rad ({np.rad2deg(dtheta)}°)")
@@ -65,7 +65,9 @@ quiver(
     title='Vetor densidade de corrente',
     xlabel='Coordenada X (m)',
     ylabel='Coordenada Y (m)',
+    arrow_scale=1e-5,
 )
+
 
 #surface plot da fonte de calor equivalente
 surf_3d(

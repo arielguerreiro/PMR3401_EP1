@@ -1,8 +1,8 @@
 import numpy as np
 
 props_elet = {
-    "sigma_A": 5e-6*100000,
-    "sigma_B": 1e-5*100000,
+    "sigma_A": 5e-6 * 1e5,
+    "sigma_B": 1e-5 * 1e5,
     "k_A": 110,
     "k_B": 500
 }
