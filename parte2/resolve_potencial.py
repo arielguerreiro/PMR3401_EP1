@@ -2,6 +2,7 @@ import numpy as np
 from liebmann import *
 from funcoes_potencial import *
 
+#propriedades geometricas do sistema
 props_geo = {
     "R_A" : [0.03, 0.08 + 0.03],
     "R_B" : [0.03 + 0.02, 0.03 + 0.05],
@@ -10,12 +11,23 @@ props_geo = {
 }
 
 def cria_malha(dr, dtheta):
-    
+    '''
+    Função que cria a malha para o problema, de acordo os valores de delta r e
+    delta theta fornecidos. Pela simetria do problema, so é necessário resolver
+    metade da geometria da peça, então a malha gerada é equivalente a somente
+    metade da peça
+
+    **Entradas**
+    dr: variação  do raio "delta r"
+    dtheta: variação do ângulo"delta theta"
+
+    **Saídas**:
+    M: matriz inicialmente zerada, do tamanho necessário
+    '''
     #cria matriz inicial
+    
     n_r = (max(props_geo['R_A']) - min(props_geo['R_A']))/dr
     n_theta = (max(props_geo["Theta_A"]) - min(props_geo["Theta_A"]))/dtheta 
-    
-    ##print(n_r, n_theta)
 
     M = np.zeros((int(n_r+1), int(n_theta+1)))
 
@@ -23,7 +35,20 @@ def cria_malha(dr, dtheta):
 
 
 def define_condicao(i, j, dr, dtheta):
-    #verifica em qual condicao esta o ponto i, j da malha
+    
+    '''Função que verifica em que condição o ponto i,j da matriz é,
+    para calcular o valor da variável com a expressão correta. A
+    correspondência entre o valor numérico e a condição pode ser
+    conferida na função 'calcula_tensão'
+
+    **Entradas**:
+    i, j: coordenadas do ponto
+    dr, dtheta: variações do raio e ângulo
+
+    **Saída**
+    valor numérico correspondente à condição do ponto
+    '''
+
     raio = i*dr + min(props_geo['R_A'])
     theta = np.rad2deg(j*dtheta + min(props_geo['Theta_A']))
     #angulos sao usados em graus nessa funcao para facilitar a analise
@@ -81,7 +106,9 @@ def define_condicao(i, j, dr, dtheta):
 
 def calcula_tensao(M, i, j, dr, dtheta,q_dots):
     '''
-    Funcao que calcula a tensao para um ponto i, j
+    Funcao que calcula a tensão (caso q_dots seja None)
+    ou a temperatura do ponto. A função verifica qual é
+    a condição do ponto e em seguida chama a função correspondente
 
     10 condicoes necessarias
     - 0: borda superior de A
@@ -94,6 +121,13 @@ def calcula_tensao(M, i, j, dr, dtheta,q_dots):
     - 7: borda superior de B
     - 8: interior de A
     - 9: interior de B
+
+    **Entradas**
+    M: matriz dos valores a serem calculados
+    i e j: coordenadas do ponto desejado
+    dr e dtheta: variações do raio e ângulo
+    q_dots = Valor da energia dissipada
+    (passar como None caso seja caso elétrico)
     '''
 
     if q_dots is None: 
@@ -127,6 +161,17 @@ def calcula_tensao(M, i, j, dr, dtheta,q_dots):
     return temp
 
 def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q_dots=None):
+    '''
+    Função principal para resolver o problema do potencial elétrico ou da temperatura
+    de cada um dos pontos. A função cria a malha e usa o método de Liebmann para encontrar
+    os valores
+    
+    **Entradas**:
+    dr e dtheta: variações do raio e ângulo
+    lamb: fator de sobrerelaxação
+    erro_des: erro relativo desejado
+    q_dots: valor de q_ponto, usado no caso térmico
+    '''
 
     #cria matriz inicialmente zerada
     M = cria_malha(dr, dtheta)
@@ -147,6 +192,20 @@ def resolve_potencial(dr=0.001, dtheta=np.deg2rad(2), lamb=1.75, erro_des=1e-4,q
     return M_ans
 
 def calcula_Qr(V, i, j, dr, dtheta, termico=False):
+    '''
+    Calcula a coordenada r do vetor J ou do vetor fluxo de calor,
+    de acordo com o parametro 'termico'
+
+    **Entradas**:
+    V: matriz com os valores de tensão ou temperatura
+    i e j: coordenadas do ponto desejado
+    dr e dtheta: variações do raio e ângulo
+    termico: 'False' para problema elétrico, 'True' para térmico
+
+    **Saídas**
+    qr: valor da coordenada r do vetor
+    '''
+
     condicao = define_condicao(i, j, dr, dtheta)
 
     if termico:
@@ -170,6 +229,20 @@ def calcula_Qr(V, i, j, dr, dtheta, termico=False):
     return qr
 
 def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
+    '''
+    Calcula a coordenada theta do vetor J ou do vetor fluxo de calor,
+    de acordo com o parametro 'termico'
+
+    **Entradas**:
+    V: matriz com os valores de tensão ou temperatura
+    i e j: coordenadas do ponto desejado
+    dr e dtheta: variações do raio e ângulo
+    termico: 'False' para problema elétrico, 'True' para térmico
+
+    **Saídas**
+    qtheta: valor da coordenada theta do vetor
+    '''
+
     condicao = define_condicao(i, j, dr, dtheta)
     raio = 0.03 + i*dr
 
@@ -196,6 +269,20 @@ def calcula_Qtheta(V, i, j, dr, dtheta, termico=False):
     return qtheta
 
 def calcula_J(V_ans, dr, dtheta, termico=False):
+    '''
+    Calcula vetor J ou Q e armazena o resultado em uma matriz tridimensional,
+    onde J[i, j, 0] corresponde à coordenada r do vetor e J[i, j, 1] à coordenada
+    theta
+
+    **Entradas**:
+    V_ans: matriz com as tensões (para o J) ou temperaturas (para o Q)
+    dr e dtheta: variações do raio e ângulo
+    termico: 'False' para problema elétrico, 'True' para térmico
+
+    **Saídas**
+    J: matriz tridimensional com os vetores correspondentes de cada posição i,j
+    '''
+    
     J = np.zeros((V_ans.shape[0], V_ans.shape[1], 2)) #guarda os vetores
     for i in range(J.shape[0]):
         for j in range(J.shape[1]):
@@ -205,6 +292,17 @@ def calcula_J(V_ans, dr, dtheta, termico=False):
     return J
 
 def calcula_qponto(J_ans, dr, dtheta):
+    '''
+    Função que calcula o valor de q_ponto de cada valor i, j
+    a partir da densidade de corrente, para utilizar no problema térmico
+    
+    **Entradas**:
+    J: matriz tridimensional com os vetores correspondentes de cada posição i,j
+    dr e dtheta: variações do raio e ângulo
+
+    **Saídas**:
+    qdot: matriz com os valores da energia dissipada em cada posição i, j
+    '''
     qdot = np.zeros((J_ans.shape[0], J_ans.shape[1]))
 
     for i in range(qdot.shape[0]):
@@ -221,6 +319,15 @@ def calcula_qponto(J_ans, dr, dtheta):
     return qdot
 
 def calcula_corrente(J_ans, dtheta, rmax=False):
+    '''
+    Função de integração, usada para calcular a corrente ou o fluxo por
+    conveccão. A integral foi aproximada por meio do método dos trapézios.
+    
+    **Entradas**:
+    J_ans: matriz tridimensional com os vetores correspondentes de cada posição i,j
+    dtheta: variação do ângulo
+    rmax: 'False' para raio 0.03, 'True' para raio 0.11
+    '''
     #aproxima integral para soma
     soma = 0
     if rmax:
