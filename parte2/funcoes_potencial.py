@@ -12,7 +12,9 @@ props_elet = {
 """
 Todas as funcoes precisam das temperaturas da matriz
 de temperatura e da coordenada atual, alem das prop
-fisicas e eletricas
+fisicas e eletricas. Para calcular os valores da tensão
+elétrica, o q_dot fornecido deve ser nulo, caso contrário,
+será calculado o valor da temperatura no ponto
 
 de forma geral:
 **Entradas**
@@ -23,6 +25,9 @@ i e j: coordenadas do ponto desejado
 dr: variação  do raio "delta r"
 dtheta: variação do ângulo"delta theta"
 qdot: valor do q ponto, usado no caso térmico
+
+**Saida**
+valor da tensão elétrica ou da temperatura no ponto
 
 As funções abaixo seguem a nomenclatura criada
 para este problema, com as seguintes condições:
