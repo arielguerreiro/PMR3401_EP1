@@ -1,5 +1,6 @@
 import numpy as np
 
+#propriedades fisicas relevantes
 props_elet = {
     "sigma_A": 5e-6*1e6,
     "sigma_B": 1e-5*1e6,
@@ -11,9 +12,25 @@ props_elet = {
 """
 Todas as funcoes precisam das temperaturas da matriz
 de temperatura e da coordenada atual, alem das prop
-fisicas e eletricas
+fisicas e eletricas. Para calcular os valores da tensão
+elétrica, o q_dot fornecido deve ser nulo, caso contrário,
+será calculado o valor da temperatura no ponto
 
-10 condicoes necessarias
+de forma geral:
+**Entradas**
+M: matriz dos valores a serem calculados
+i e j: coordenadas do ponto desejado
+    i: coordenada do raio
+    j: coordenada do ângulo
+dr: variação  do raio "delta r"
+dtheta: variação do ângulo"delta theta"
+qdot: valor do q ponto, usado no caso térmico
+
+**Saida**
+valor da tensão elétrica ou da temperatura no ponto
+
+As funções abaixo seguem a nomenclatura criada
+para este problema, com as seguintes condições:
 - 0: borda superior de A
 - 1: borda inferior de B (regiao de simetria)
 - 2: borda esquerda de B

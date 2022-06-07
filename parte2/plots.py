@@ -8,6 +8,20 @@ import plotly.figure_factory as ff
 import pandas as pd
 
 def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C', reflexao=True):
+    '''
+    Função para gerar um heatmap de 2 dimensões, a partir dos valores armazenados
+    na matriz M
+    
+    **Entradas**:
+    M: matriz com os valores das variáveis desejadas
+    dr: variação "delta r"
+    dtheta: variação "delta theta"
+    xlabel, ylabel, title: labels para os eixos e título do gráfico
+    legend: legenda da variável desejada
+    tipo: "C" para dados contínuos, "D" para dados discretos
+    reflexao: como calcula-se somente metade da peça, caso este valor seja 'True'
+    será feita a reflexão no eixo x para mostrar a peça inteira
+    '''
 
     X = []
     Y = []
@@ -18,6 +32,7 @@ def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C', reflexao=
             raio = 0.03 + i*dr
             angulo = j*dtheta
 
+            #conversao de coord. polar para cartesiana
             x = raio*np.cos(angulo)
             y = raio*np.sin(angulo)
             
@@ -68,6 +83,16 @@ def heatmap_2d(M, dr, dtheta, xlabel, ylabel, title, legend, tipo='C', reflexao=
     fig.show()
 
 def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
+    '''
+    Função para gerar um gráfico tridimensional da variável calculada,
+    de tipo 'surf'
+    
+    **Entradas**:
+    M: matriz com os valores das variáveis desejadas
+    dr: variação "delta r"
+    dtheta: variação "delta theta"
+    xlabel, ylabel, zlabel, title: labels para os eixos e título do gráfico
+    '''
 
     raios = [0.03 + i*dr for i in range(M.shape[0])]
     angulos = [j*dtheta for j in range(M.shape[1])]
@@ -103,6 +128,21 @@ def surf_3d(M, dr, dtheta, xlabel, ylabel, zlabel, title):
 
 
 def quiver(J, dr, dtheta, xlabel, ylabel, title, plot='half', arrow_scale=1, lib='matplotlib'):
+    '''
+    Função para gerar um gráfico bidimensional de um campo vetorial. Por se tratar de um gráfico
+    mais pesado, recomenda-se utilizar o matplotlib ao inves do plotly, mas ambas as opcções estão
+    implementadas
+    
+    **Entradas**:
+    J: matriz tridimensional com os valores dos vetores
+    dr: variação "delta r"
+    dtheta: variação "delta theta"
+    xlabel, ylabel, title: labels para os eixos e título do gráfico
+    plot: 'half' (metade - recomendado) ou 'full' (peça inteira)
+    arrow_scale: escala da seta, utilizada somente na versão do plotly
+    lib: 'matplotlib' (recomendada) ou 'plotly'
+    '''
+
 
     raios = [0.03 + i*dr for i in range(J.shape[0])]
     angulos = [j*dtheta for j in range(J.shape[1])]

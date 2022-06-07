@@ -67,7 +67,6 @@ if __name__ == '__main__':
     }
 
     #plot dos valores
-
     plt.plot(t_int, y_int[:, 0] * plot_scalars['q'])
     plt.plot(t_int, y_int[:, 1] * plot_scalars['i_1'])
     plt.plot(t_int, y_int[:, 2] * plot_scalars['i_2'])
