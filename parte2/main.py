@@ -6,16 +6,19 @@ import time
 print("PMR3401 - EP1 2022")
 print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
-    
+
+'''
+Arquivo principal, responsável por resolver
+toda a parte 2 do exercício-programa
+'''
+
 #calcula a tensao de cada ponto da malha
 dr = 0.001
 dtheta = np.deg2rad(1)
 
 print(f"Discretização adotada:\ndelta_r = {dr}\ndelta_theta = {dtheta:.5f} rad ({np.rad2deg(dtheta)}°)")
 
-#calculo das tensoes
-start_time = time.time()
-
+#calculo das tensoes eletricas
 V_ans = resolve_potencial(
     dr=dr,
     dtheta=dtheta,
@@ -23,33 +26,37 @@ V_ans = resolve_potencial(
     erro_des=1e-4
     )
 
-#print(f"Tempo de execução: {(time.time() - start_time):.2f} s")
-
+#calculo do vetor densidade de corrente
 J_ans = calcula_J(V_ans, dr, dtheta)
 
+#calculo da energia dissipada por efeito Joule
 q_ans = calcula_qponto(J_ans, dr, dtheta)
 
-#calcula metade da corrente - lembrar de dobrar aqui
-
+#calcula corrente eletrica pelo raio maximo.
+#Como o problema é resolvido para metade da peça,
+#o valor deve ser dobrado
 I_ans_rmax = 2*calcula_corrente(J_ans, dtheta, rmax=True)
 
+#ddp
 deltaV = 100
 
-R = deltaV/I_ans_rmax
+#calcula resisência da peça
+R_max = deltaV/I_ans_rmax
 
 print(f"Corrente calculada para Rmax = 0.11: {I_ans_rmax} A")
-print(f"Resistência equivalente: {R} Ohms")
-print(f"Potência dissipada MAX: {I_ans_rmax**2 * R}")
+print(f"Resistência equivalente: {R_max} Ohms")
+print(f"Potência dissipada MAX: {I_ans_rmax**2 * R_max}")
 
+
+#calcula corrente eletrica pelo raio minimo.
 I_ans = 2*calcula_corrente(J_ans, dtheta, rmax=False)
 
-deltaV = 100
-
-R = deltaV/I_ans
+R_min = deltaV/I_ans
 
 print(f"Corrente calculada para Rmin = 0.03: {I_ans} A")
-print(f"Resistência equivalente: {R} Ohms")
-print(f"Potência dissipada: {I_ans**2 * R}")
+print(f"Resistência equivalente: {R_min} Ohms")
+print(f"Potência dissipada: {I_ans**2 * R_min}")
+
 
 #calcula temperaturas com as mesmas funcoes do potencial
 T_ans = resolve_potencial(
@@ -60,15 +67,16 @@ T_ans = resolve_potencial(
     q_dots = q_ans)
 
 #calculo do fluxo de calor
-
 fluxo_ans = calcula_J(T_ans, dr, dtheta, termico=True)
 
 #calculo da quantidade de calor (unidade W) que flui pela parede de convecção:
-
 qt_calor_ans = 2*calcula_corrente(fluxo_ans, dtheta, rmax=True)
+
 print(f"Quantidade de calor que flui pela parede de convecção: {qt_calor_ans} W")
 
-#plots
+
+
+#plots das condições
 
 #heatmap da tensao eletrica
 heatmap_2d(
