@@ -7,6 +7,9 @@ print("PMR3401 - EP1 2022")
 print("Ariel Guerreiro - 11257838")
 print("Felipe Azank - 11258137\n\n")
 
+print(f"valor da condutividade elétrica em A: {props_elet['sigma_A']}")
+print(f"valor da condutividade elétrica em B: {props_elet['sigma_B']}")
+
 '''
 Arquivo principal, responsável por resolver
 toda a parte 2 do exercício-programa
